@@ -1,23 +1,23 @@
 #include <iostream>
-#include <algorithm>
 #include <string>
-#include <cstdint>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
 
+#include "Canvas.hpp"
+
 int main ()
 {
     const std::string output_file = "raytrace.bmp";
-    constexpr int canvas_size[2] = {100, 100};
-    constexpr int channels = 3;
-    constexpr int data_size = canvas_size[0] * canvas_size[1] * channels;
+    Canvas canvas = {25, 25, 3};
 
-    uint8_t data[data_size] = {};
-    uint8_t background_color = 255;
-    std::fill_n(data, data_size, background_color);
+    // Draw a diagonal line
+    for(int j = -12; j < 13; ++j)
+    {
+        canvas.put_pixel(j, j, {255, 255, 255});
+    }
 
-    int result = stbi_write_bmp(output_file.c_str(), canvas_size[0], canvas_size[1], channels, data);
+    int result = stbi_write_bmp(output_file.c_str(), canvas.width, canvas.height, canvas.channels, canvas.get_data());
 
     if (!result)
     {
