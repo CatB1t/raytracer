@@ -11,14 +11,13 @@ Canvas::Canvas(unsigned int width, unsigned int height, unsigned int channels)
 
 void Canvas::put_pixel(int x, int y, RGBColor color)
 {
-    if(std::abs(x) > m_rangeX || std::abs(y) > m_rangeY)
-        return;
-
     x = m_rangeX + x;
     y = m_rangeY - y;
 
-    // TODO doesn't work with even dimensions
-    int p = this->width * y * this->channels + x * this->channels;
+    if(std::abs(x) >= this->width || std::abs(y) >= this->height)
+        return;
+
+    int p = (this->width * y + x) * this->channels;
     m_data[p] = color.r;
     m_data[p + 1] = color.g;
     m_data[p + 2] = color.b;
