@@ -17,9 +17,24 @@ struct Point2D
 template<typename T>
 struct Point3D
 {
-    float x = 0;
-    float y = 0;
-    float z = 0;
+    T x = 0;
+    T y = 0;
+    T z = 0;
+
+    T dot(const Point3D<T>& other)
+    {
+        return x * other.x + y * other.y + z * other.z;
+    }
+
+    Point3D<T> operator+(const Point3D& other)
+    {
+        return {x - other.x, y - other.y, z - other.z};
+    }
+
+    Point3D<T> operator-(const Point3D& other)
+    {
+        return {x - other.x, y - other.y, z - other.z};
+    }
 };
 
 struct Sphere {
