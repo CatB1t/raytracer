@@ -1,6 +1,7 @@
 #include <iostream>
 #include <string>
 #include <vector>
+#include <cfloat>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
@@ -41,6 +42,24 @@ struct Sphere {
     float radius = 1;
     Point3D<float> center;
     RGBColor color;
+
+    Point2D<float>* intersect_ray(Point3D<float> origin, Point3D<float> direction)
+    {
+        Point3D<float> co = origin - center;
+        float a = direction.dot(direction);
+        float b = 2 * direction.dot(co);
+        float c = co.dot(co) - radius*radius;
+
+        float disc = b*b - 4*a*c; 
+        if(disc < 0 )
+            return nullptr;
+
+        disc = sqrt(disc);
+        Point2D<float>* hit = new Point2D<float>();
+        hit->x = (-b + disc) / (2 * a);
+        hit->y = (-b - disc) / (2 * a);
+        return hit;
+    };
 };
 
 struct Scene {
@@ -60,16 +79,46 @@ Point3D<float> canvasToViewport(Point2D<int> pixel, Canvas& canvas)
     };
 }
 
-RGBColor traceRay(Point3D<float> origin, Point3D<float> dir, float min, float max, Scene& scene)
-{
+template<typename T>
+bool in_range(T val, T min, T max) { return val <= max && val >= min;}
 
-    return {255, 255, 255}; // no-hit, background color
+RGBColor traceRay(Point3D<float> origin, Point3D<float> dir, float t_min, float t_max, Scene& scene)
+{
+    float closeset_sphere_distance = FLT_MAX;
+    const Sphere* closeset_sphere = nullptr;
+
+    for(auto& sphere : scene.spheres)
+    {
+        Point2D<float>* intersect_points = sphere.intersect_ray(origin, dir);
+
+        if (!intersect_points)
+            continue;
+        
+        if(in_range(intersect_points->x, t_min, t_max) && intersect_points->x < closeset_sphere_distance)
+        {
+            closeset_sphere_distance = intersect_points->x;
+            closeset_sphere = &sphere;
+        }
+
+        if(in_range(intersect_points->y, t_min, t_max) && intersect_points->y < closeset_sphere_distance)
+        {
+            closeset_sphere_distance = intersect_points->y;
+            closeset_sphere = &sphere;
+        }
+
+        delete intersect_points;
+    }
+
+    if(!closeset_sphere)
+        return {255, 255, 255}; // no-hit, background color
+    
+    return closeset_sphere->color;
 }
 
 int main ()
 {
     const std::string output_file = "raytrace.bmp";
-    Canvas canvas = {800, 600, 3};
+    Canvas canvas = {800, 800, 3};
 
     Scene scene;
     scene.spheres.push_back(Sphere{1, {0, -1, 3}, {255, 0, 0}});
