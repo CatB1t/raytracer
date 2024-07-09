@@ -2,6 +2,7 @@
 #include <string>
 #include <vector>
 #include <cfloat>
+#include <algorithm>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
 #include "stb_image_write.h"
@@ -9,12 +10,18 @@
 #include "Canvas.hpp"
 #include "Point.hpp"
 #include "Sphere.hpp"
+#include "Lights/ambient.hpp"
+#include "Lights/point.hpp"
+#include "Lights/directional.hpp"
 
 struct Scene {
+    AmbientLight ambient_light {0.1};
+    std::vector<PointLight> point_lights;
+    std::vector<DirectionalLight> directional_lights;
     std::vector<Sphere> spheres;
 };
 
-Point3D<float> canvasToViewport(Point2D<int> pixel, Canvas& canvas)
+Point3D<float> canvasToViewport(const Point2D<int>& pixel, const Canvas& canvas)
 {
     float viewportWidth = 1;
     float viewportHeight = 1;
@@ -60,7 +67,30 @@ RGBColor traceRay(Point3D<float> origin, Point3D<float> dir, float t_min, float 
     if(!closeset_sphere)
         return {255, 255, 255}; // no-hit, background color
     
-    return closeset_sphere->color;
+    float total_intensity = scene.ambient_light.intensity;
+
+    Point3D<float> intersection_point = origin + dir * closeset_sphere_distance;
+    Point3D<float> normal_dir = (intersection_point - closeset_sphere->center).normalize();
+    const float normal_length = normal_dir.length();
+
+    for(auto light : scene.directional_lights)
+    {
+        float n_dot_l = normal_dir.dot(light.direction.normalize());
+        if(n_dot_l < 0)
+            continue;
+        total_intensity += n_dot_l / (light.direction.length() * normal_length);
+    }
+
+    for(auto light : scene.point_lights)
+    {
+        Point3D<float> light_dir = light.position - intersection_point;
+        float n_dot_l = normal_dir.dot(light_dir);
+        if(n_dot_l < 0)
+            continue;
+        total_intensity += n_dot_l / (light_dir.length() * normal_length);
+    }
+
+    return std::clamp(total_intensity, 0.0f, 1.0f) * closeset_sphere->color;
 }
 
 int main ()
@@ -72,6 +102,11 @@ int main ()
     scene.spheres.push_back(Sphere{1, {0, -1, 3}, {255, 0, 0}});
     scene.spheres.push_back(Sphere{1, {-2, 0, 4}, {0, 255, 0}});
     scene.spheres.push_back(Sphere{1, {2, 0, 4}, {0, 0, 255}});
+    scene.spheres.push_back(Sphere{5000, {0, -5001, 0}, {255, 255, 0}});
+
+    scene.point_lights.push_back(PointLight{0.4f, {2, 1, 0}});
+    scene.directional_lights.push_back(DirectionalLight{0.1f, {1, 4, 4}});
+
     Point3D<float> camera_origin = {0, 0, 0};
 
     int i_range = canvas.width / 2;
