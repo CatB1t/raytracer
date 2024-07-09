@@ -1,3 +1,5 @@
+#pragma once
+
 #include <cstdint>
 
 using PixelColorT = uint8_t;
