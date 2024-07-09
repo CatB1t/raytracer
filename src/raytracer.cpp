@@ -7,60 +7,8 @@
 #include "stb_image_write.h"
 
 #include "Canvas.hpp"
-
-template<typename T>
-struct Point2D
-{
-    T x;
-    T y;
-};
-
-template<typename T>
-struct Point3D
-{
-    T x = 0;
-    T y = 0;
-    T z = 0;
-
-    T dot(const Point3D<T>& other)
-    {
-        return x * other.x + y * other.y + z * other.z;
-    }
-
-    Point3D<T> operator+(const Point3D& other)
-    {
-        return {x - other.x, y - other.y, z - other.z};
-    }
-
-    Point3D<T> operator-(const Point3D& other)
-    {
-        return {x - other.x, y - other.y, z - other.z};
-    }
-};
-
-struct Sphere {
-    float radius = 1;
-    Point3D<float> center;
-    RGBColor color;
-
-    Point2D<float>* intersect_ray(Point3D<float> origin, Point3D<float> direction)
-    {
-        Point3D<float> co = origin - center;
-        float a = direction.dot(direction);
-        float b = 2 * direction.dot(co);
-        float c = co.dot(co) - radius*radius;
-
-        float disc = b*b - 4*a*c; 
-        if(disc < 0 )
-            return nullptr;
-
-        disc = sqrt(disc);
-        Point2D<float>* hit = new Point2D<float>();
-        hit->x = (-b + disc) / (2 * a);
-        hit->y = (-b - disc) / (2 * a);
-        return hit;
-    };
-};
+#include "Point.hpp"
+#include "Sphere.hpp"
 
 struct Scene {
     std::vector<Sphere> spheres;
