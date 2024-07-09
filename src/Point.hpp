@@ -1,5 +1,8 @@
 #pragma once
 
+#include <cassert>
+#include <cmath>
+
 template<typename T>
 struct Point2D
 {
@@ -19,12 +22,29 @@ struct Point3D
         return x * other.x + y * other.y + z * other.z;
     }
 
-    Point3D<T> operator+(const Point3D& other)
+    Point3D<T> normalize() const
     {
-        return {x - other.x, y - other.y, z - other.z};
+        T sqr_sum = this->length();
+        assert(std::abs(sqr_sum) > 0);
+        return {x / sqr_sum, y / sqr_sum, z / sqr_sum};
     }
 
-    Point3D<T> operator-(const Point3D& other)
+    T length() const
+    {
+        return sqrt(x * x + y * y + z * z);
+    }
+
+    Point3D<T> operator*(float val) const
+    {
+        return {x * val, y * val, z * val};
+    }
+
+    Point3D<T> operator+(const Point3D& other) const
+    {
+        return {x + other.x, y + other.y, z + other.z};
+    }
+
+    Point3D<T> operator-(const Point3D& other) const
     {
         return {x - other.x, y - other.y, z - other.z};
     }
