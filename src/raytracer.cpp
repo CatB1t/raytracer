@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cfloat>
+#include <cmath>
 #include <iostream>
 #include <string>
 #include <vector>
@@ -36,11 +37,20 @@ template <typename T> bool in_range(T val, T min, T max) {
 }
 
 float calculateLighting(Point3D<float> light_dir, Point3D<float> normal_dir,
-                        float light_intensity) {
+                        Point3D<float> view_dir, float light_intensity,
+                        float specular_component) {
+  float ret = 0.0f;
   float n_dot_l = normal_dir.dot(light_dir);
-  if (n_dot_l < 0)
-    return 0.0f;
-  return light_intensity * (n_dot_l / (light_dir.length()));
+  if (n_dot_l > 0)
+    ret += (n_dot_l / (light_dir.length()));
+
+  Point3D<float> reflected_light = 2 * normal_dir * normal_dir.dot(light_dir) - light_dir;
+  float v_dot_r = view_dir.dot(reflected_light);
+
+  if (v_dot_r > 0)
+    ret += std::pow((v_dot_r / (view_dir.length() * reflected_light.length())), specular_component);
+
+  return ret * light_intensity;
 }
 
 RGBColor traceRay(Point3D<float> origin, Point3D<float> dir, float t_min,
@@ -79,14 +89,16 @@ RGBColor traceRay(Point3D<float> origin, Point3D<float> dir, float t_min,
       (intersection_point - closeset_sphere->center).normalize();
   const float normal_length = normal_dir.length();
 
+  Point3D<float> view_dir = -1 * dir;
+
   for (auto light : scene.directional_lights)
-    total_intensity +=
-        calculateLighting(light.direction, normal_dir, light.intensity);
+    total_intensity += calculateLighting(light.direction, normal_dir, view_dir,
+                          light.intensity, closeset_sphere->specular);
 
   for (auto light : scene.point_lights) {
     Point3D<float> light_dir = light.position - intersection_point;
-    total_intensity +=
-        calculateLighting(light_dir, normal_dir, light.intensity);
+    total_intensity += calculateLighting(light_dir, normal_dir, view_dir, light.intensity,
+                          closeset_sphere->specular);
   }
 
   return std::clamp(total_intensity, 0.0f, 1.0f) * closeset_sphere->color;
@@ -97,10 +109,10 @@ int main() {
   Canvas canvas = {800, 800, 3};
 
   Scene scene;
-  scene.spheres.push_back(Sphere{1, {0, -1, 3}, {255, 0, 0}});
-  scene.spheres.push_back(Sphere{1, {-2, 0, 4}, {0, 255, 0}});
-  scene.spheres.push_back(Sphere{1, {2, 0, 4}, {0, 0, 255}});
-  scene.spheres.push_back(Sphere{5000, {0, -5001, 0}, {255, 255, 0}});
+  scene.spheres.push_back(Sphere{1, {0, -1, 3}, {255, 0, 0}, 500.0f});
+  scene.spheres.push_back(Sphere{1, {-2, 0, 4}, {0, 255, 0}, 500.0f});
+  scene.spheres.push_back(Sphere{1, {2, 0, 4}, {0, 0, 255}, 10.0f});
+  scene.spheres.push_back(Sphere{5000, {0, -5001, 0}, {255, 255, 0}, 1000.0f});
 
   scene.point_lights.push_back(PointLight{0.6f, {2, 1, 0}});
   scene.directional_lights.push_back(DirectionalLight{0.2f, {1, 4, 4}});
