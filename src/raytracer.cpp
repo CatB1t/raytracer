@@ -37,6 +37,13 @@ Point3D<float> canvasToViewport(const Point2D<int>& pixel, const Canvas& canvas)
 template<typename T>
 bool in_range(T val, T min, T max) { return val <= max && val >= min;}
 
+float calculateLighting(Point3D<float> light_dir, Point3D<float> normal_dir, float light_intensity) {
+  float n_dot_l = normal_dir.dot(light_dir);
+  if(n_dot_l < 0)
+      return 0.0f;
+  return light_intensity * (n_dot_l / (light_dir.length()));
+}
+
 RGBColor traceRay(Point3D<float> origin, Point3D<float> dir, float t_min, float t_max, Scene& scene)
 {
     float closeset_sphere_distance = FLT_MAX;
@@ -74,20 +81,12 @@ RGBColor traceRay(Point3D<float> origin, Point3D<float> dir, float t_min, float 
     const float normal_length = normal_dir.length();
 
     for(auto light : scene.directional_lights)
-    {
-        float n_dot_l = normal_dir.dot(light.direction.normalize());
-        if(n_dot_l < 0)
-            continue;
-        total_intensity += light.intensity * (n_dot_l / (light.direction.length() * normal_length));
-    }
+      total_intensity += calculateLighting(light.direction, normal_dir, light.intensity);
 
     for(auto light : scene.point_lights)
     {
         Point3D<float> light_dir = light.position - intersection_point;
-        float n_dot_l = normal_dir.dot(light_dir);
-        if(n_dot_l < 0)
-            continue;
-        total_intensity += light.intensity * (n_dot_l / (light_dir.length() * normal_length));
+        total_intensity += calculateLighting(light_dir, normal_dir, light.intensity);
     }
 
     return std::clamp(total_intensity, 0.0f, 1.0f) * closeset_sphere->color;
