@@ -15,7 +15,7 @@
 #include "Lights/directional.hpp"
 
 struct Scene {
-    AmbientLight ambient_light {0.1};
+    AmbientLight ambient_light {0.2};
     std::vector<PointLight> point_lights;
     std::vector<DirectionalLight> directional_lights;
     std::vector<Sphere> spheres;
@@ -78,7 +78,7 @@ RGBColor traceRay(Point3D<float> origin, Point3D<float> dir, float t_min, float 
         float n_dot_l = normal_dir.dot(light.direction.normalize());
         if(n_dot_l < 0)
             continue;
-        total_intensity += n_dot_l / (light.direction.length() * normal_length);
+        total_intensity += light.intensity * (n_dot_l / (light.direction.length() * normal_length));
     }
 
     for(auto light : scene.point_lights)
@@ -87,7 +87,7 @@ RGBColor traceRay(Point3D<float> origin, Point3D<float> dir, float t_min, float 
         float n_dot_l = normal_dir.dot(light_dir);
         if(n_dot_l < 0)
             continue;
-        total_intensity += n_dot_l / (light_dir.length() * normal_length);
+        total_intensity += light.intensity * (n_dot_l / (light_dir.length() * normal_length));
     }
 
     return std::clamp(total_intensity, 0.0f, 1.0f) * closeset_sphere->color;
@@ -104,8 +104,8 @@ int main ()
     scene.spheres.push_back(Sphere{1, {2, 0, 4}, {0, 0, 255}});
     scene.spheres.push_back(Sphere{5000, {0, -5001, 0}, {255, 255, 0}});
 
-    scene.point_lights.push_back(PointLight{0.4f, {2, 1, 0}});
-    scene.directional_lights.push_back(DirectionalLight{0.1f, {1, 4, 4}});
+    scene.point_lights.push_back(PointLight{0.6f, {2, 1, 0}});
+    scene.directional_lights.push_back(DirectionalLight{0.2f, {1, 4, 4}});
 
     Point3D<float> camera_origin = {0, 0, 0};
 
