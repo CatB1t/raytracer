@@ -13,7 +13,7 @@ template <typename T> struct Point3D {
   T y = 0;
   T z = 0;
 
-  T dot(const Point3D<T> &other) {
+  T dot(const Point3D<T> &other) const {
     return x * other.x + y * other.y + z * other.z;
   }
 
@@ -35,3 +35,8 @@ template <typename T> struct Point3D {
     return {x - other.x, y - other.y, z - other.z};
   }
 };
+
+template <typename T>
+inline Point3D<T> operator*(float val, const Point3D<T> &other) {
+  return {other.x * val, other.y * val, other.z * val};
+}
