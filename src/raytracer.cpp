@@ -84,32 +84,27 @@ auto find_nearest_intersection(Point3D<float> origin, Point3D<float> dir,
 }
 
 RGBColor traceRay(Point3D<float> origin, Point3D<float> dir, float t_min,
-                  float t_max, Scene &scene) {
-
+                  float t_max, Scene &scene, int depth) {
   auto hit_point = find_nearest_intersection(origin, dir, t_min, t_max, scene);
+
+  if (!hit_point.second)
+    return {0, 0, 0}; // no-hit, background color
 
   float closeset_sphere_distance = hit_point.first;
   const Sphere *closeset_sphere = hit_point.second;
-
-  if (!closeset_sphere)
-    return {255, 255, 255}; // no-hit, background color
-
   float total_intensity = scene.ambient_light.intensity;
 
   Point3D<float> intersection_point = origin + dir * closeset_sphere_distance;
-  Point3D<float> normal_dir =
-      (intersection_point - closeset_sphere->center).normalize();
+  Point3D<float> normal_dir = (intersection_point - closeset_sphere->center).normalize();
   const float normal_length = normal_dir.length();
 
   Point3D<float> view_dir = -1 * dir;
-  constexpr float eps = 1e-3;
+  constexpr float eps = 0.01f;
 
   for (auto light : scene.directional_lights) {
     auto hit_point = find_nearest_intersection(intersection_point, light.direction, eps, FLT_MAX, scene);
     if (!hit_point.second) // There's no object between light and point
-      total_intensity +=
-          calculateLighting(light.direction, normal_dir, view_dir,
-                            light.intensity, closeset_sphere->specular);
+      total_intensity += calculateLighting(light.direction, normal_dir, view_dir, light.intensity, closeset_sphere->specular);
   }
 
   for (auto light : scene.point_lights) {
@@ -117,12 +112,17 @@ RGBColor traceRay(Point3D<float> origin, Point3D<float> dir, float t_min,
 
     auto hit_point = find_nearest_intersection(intersection_point, light_dir, eps, 1, scene);
     if (!hit_point.second) // There's no object between light and point
-      total_intensity +=
-          calculateLighting(light_dir, normal_dir, view_dir, light.intensity,
-                            closeset_sphere->specular);
+      total_intensity += calculateLighting(light_dir, normal_dir, view_dir, light.intensity, closeset_sphere->specular);
   }
 
-  return std::clamp(total_intensity, 0.0f, 1.0f) * closeset_sphere->color;
+  RGBColor sphereColor = std::clamp(total_intensity, 0.0f, 1.0f) * closeset_sphere->color;
+
+  if (depth <= 0 | closeset_sphere->reflective <= 0)
+    return sphereColor;
+
+  Point3D<float> reflectedDir = view_dir.reflect(normal_dir);
+  RGBColor reflectColor = traceRay(intersection_point, reflectedDir, 0.05f, FLT_MAX, scene, depth - 1);
+  return (reflectColor * closeset_sphere->reflective) + (sphereColor * (1.0f - closeset_sphere->reflective));
 }
 
 int main() {
@@ -130,10 +130,10 @@ int main() {
   Canvas canvas = {800, 800, 3};
 
   Scene scene;
-  scene.spheres.push_back(Sphere{1, {0, -1, 3}, {255, 0, 0}, 500.0f});
-  scene.spheres.push_back(Sphere{1, {-2, 0, 4}, {0, 255, 0}, 500.0f});
-  scene.spheres.push_back(Sphere{1, {2, 0, 4}, {0, 0, 255}, 10.0f});
-  scene.spheres.push_back(Sphere{5000, {0, -5001, 0}, {255, 255, 0}, 1000.0f});
+  scene.spheres.push_back(Sphere{1, {0, -1, 3}, {255, 0, 0}, 500.0f, 0.2f});
+  scene.spheres.push_back(Sphere{1, {-2, 0, 4}, {0, 255, 0}, 10.0f, 0.4f});
+  scene.spheres.push_back(Sphere{1, {2, 0, 4}, {0, 0, 255}, 500.0f, 0.3f});
+  scene.spheres.push_back(Sphere{5000, {0, -5001, 0}, {255, 255, 0}, 1000.0f, 0.5f});
 
   scene.point_lights.push_back(PointLight{0.6f, {2, 1, 0}});
   scene.directional_lights.push_back(DirectionalLight{0.2f, {1, 4, 4}});
@@ -146,7 +146,7 @@ int main() {
   for (int i = -i_range; i <= i_range; ++i) {
     for (int j = -y_range; j <= y_range; ++j) {
       Point3D<float> viewport_point = canvasToViewport({i, j}, canvas);
-      RGBColor color = traceRay(camera_origin, viewport_point, 1, 100, scene);
+      RGBColor color = traceRay(camera_origin, viewport_point, 1, 100, scene, 10);
       canvas.put_pixel(i, j, color);
     }
   }

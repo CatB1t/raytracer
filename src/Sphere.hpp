@@ -10,6 +10,7 @@ struct Sphere {
   Point3D<float> center;
   RGBColor color;
   float specular = -1.0f;
+  float reflective = -1.0f;
 
   Point2D<float> *intersect_ray(Point3D<float> origin,
                                 Point3D<float> direction) const {
