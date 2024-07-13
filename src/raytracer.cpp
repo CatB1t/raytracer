@@ -102,15 +102,24 @@ RGBColor traceRay(Point3D<float> origin, Point3D<float> dir, float t_min,
   const float normal_length = normal_dir.length();
 
   Point3D<float> view_dir = -1 * dir;
+  constexpr float eps = 1e-3;
 
-  for (auto light : scene.directional_lights)
-    total_intensity += calculateLighting(light.direction, normal_dir, view_dir,
-                          light.intensity, closeset_sphere->specular);
+  for (auto light : scene.directional_lights) {
+    auto hit_point = find_nearest_intersection(intersection_point, light.direction, eps, FLT_MAX, scene);
+    if (!hit_point.second) // There's no object between light and point
+      total_intensity +=
+          calculateLighting(light.direction, normal_dir, view_dir,
+                            light.intensity, closeset_sphere->specular);
+  }
 
   for (auto light : scene.point_lights) {
     Point3D<float> light_dir = light.position - intersection_point;
-    total_intensity += calculateLighting(light_dir, normal_dir, view_dir, light.intensity,
-                          closeset_sphere->specular);
+
+    auto hit_point = find_nearest_intersection(intersection_point, light_dir, eps, 1, scene);
+    if (!hit_point.second) // There's no object between light and point
+      total_intensity +=
+          calculateLighting(light_dir, normal_dir, view_dir, light.intensity,
+                            closeset_sphere->specular);
   }
 
   return std::clamp(total_intensity, 0.0f, 1.0f) * closeset_sphere->color;
