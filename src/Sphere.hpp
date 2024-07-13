@@ -12,7 +12,7 @@ struct Sphere {
   float specular = -1.0f;
 
   Point2D<float> *intersect_ray(Point3D<float> origin,
-                                Point3D<float> direction) {
+                                Point3D<float> direction) const {
     Point3D<float> co = origin - center;
     float a = direction.dot(direction);
     float b = 2 * direction.dot(co);

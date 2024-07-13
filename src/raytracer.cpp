@@ -3,6 +3,7 @@
 #include <cmath>
 #include <iostream>
 #include <string>
+#include <utility>
 #include <vector>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
@@ -53,8 +54,8 @@ float calculateLighting(Point3D<float> light_dir, Point3D<float> normal_dir,
   return ret * light_intensity;
 }
 
-RGBColor traceRay(Point3D<float> origin, Point3D<float> dir, float t_min,
-                  float t_max, Scene &scene) {
+auto find_nearest_intersection(Point3D<float> origin, Point3D<float> dir,
+                               float t_min, float t_max, const Scene &scene) {
   float closeset_sphere_distance = FLT_MAX;
   const Sphere *closeset_sphere = nullptr;
 
@@ -78,6 +79,17 @@ RGBColor traceRay(Point3D<float> origin, Point3D<float> dir, float t_min,
 
     delete intersect_points;
   }
+
+  return std::make_pair(closeset_sphere_distance, closeset_sphere);
+}
+
+RGBColor traceRay(Point3D<float> origin, Point3D<float> dir, float t_min,
+                  float t_max, Scene &scene) {
+
+  auto hit_point = find_nearest_intersection(origin, dir, t_min, t_max, scene);
+
+  float closeset_sphere_distance = hit_point.first;
+  const Sphere *closeset_sphere = hit_point.second;
 
   if (!closeset_sphere)
     return {255, 255, 255}; // no-hit, background color
