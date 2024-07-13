@@ -23,6 +23,10 @@ template <typename T> struct Point3D {
     return {x / sqr_sum, y / sqr_sum, z / sqr_sum};
   }
 
+  Point3D<T> reflect(const Point3D<T>& normal) {
+    return 2 * normal * normal.dot(*this) - *this;
+  }
+
   T length() const { return sqrt(x * x + y * y + z * z); }
 
   Point3D<T> operator*(float val) const { return {x * val, y * val, z * val}; }

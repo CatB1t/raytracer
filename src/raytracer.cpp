@@ -45,7 +45,7 @@ float calculateLighting(Point3D<float> light_dir, Point3D<float> normal_dir,
   if (n_dot_l > 0)
     ret += (n_dot_l / (light_dir.length()));
 
-  Point3D<float> reflected_light = 2 * normal_dir * normal_dir.dot(light_dir) - light_dir;
+  Point3D<float> reflected_light = light_dir.reflect(normal_dir);
   float v_dot_r = view_dir.dot(reflected_light);
 
   if (v_dot_r > 0)
