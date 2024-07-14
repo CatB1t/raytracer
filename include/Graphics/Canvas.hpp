@@ -1,7 +1,9 @@
 #pragma once
 
-#include "RGBColor.hpp"
 #include <vector>
+#include "Graphics/RGBColor.hpp"
+#include "Vector/Vector2D.hpp"
+#include "Vector/Vector3D.hpp"
 
 class Canvas {
 public:
@@ -14,6 +16,7 @@ public:
 
   void put_pixel(int x, int y, RGBColor color);
   const PixelColorT *get_data() { return m_data.data(); };
+  Point3D<float> canvasToViewport(const Point2D<int> &pixel);
 
 private:
   std::vector<PixelColorT> m_data;

@@ -4,35 +4,18 @@
 #include <iostream>
 #include <string>
 #include <utility>
-#include <vector>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "stb_image_write.h"
+#include "Vendor/stb_image_write.h"
 
-#include "Canvas.hpp"
+#include "Core/Scene.hpp"
+#include "Graphics/Canvas.hpp"
+#include "Shapes/Sphere.hpp"
+#include "Vector/Vector2D.hpp"
+#include "Vector/Vector3D.hpp"
 #include "Lights/ambient.hpp"
 #include "Lights/directional.hpp"
 #include "Lights/point.hpp"
-#include "Vector/Vector2D.hpp"
-#include "Vector/Vector3D.hpp"
-#include "Sphere.hpp"
-
-struct Scene {
-  AmbientLight ambient_light{0.2};
-  std::vector<PointLight> point_lights;
-  std::vector<DirectionalLight> directional_lights;
-  std::vector<Sphere> spheres;
-};
-
-Point3D<float> canvasToViewport(const Point2D<int> &pixel,
-                                const Canvas &canvas) {
-  float viewportWidth = 1;
-  float viewportHeight = 1;
-  float viewportZ = 1;
-
-  return {pixel.x * (viewportWidth / canvas.width),
-          pixel.y * (viewportHeight / canvas.height), viewportZ};
-}
 
 template <typename T> bool in_range(T val, T min, T max) {
   return val <= max && val >= min;
@@ -146,7 +129,7 @@ int main() {
 
   for (int i = -i_range; i <= i_range; ++i) {
     for (int j = -y_range; j <= y_range; ++j) {
-      Point3D<float> viewport_point = canvasToViewport({i, j}, canvas);
+      Point3D<float> viewport_point = canvas.canvasToViewport({i, j});
       RGBColor color = traceRay(camera_origin, viewport_point, 1, 100, scene, 10);
       canvas.put_pixel(i, j, color);
     }

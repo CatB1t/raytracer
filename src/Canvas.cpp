@@ -1,4 +1,4 @@
-#include "Canvas.hpp"
+#include "Graphics/Canvas.hpp"
 #include <cmath>
 
 Canvas::Canvas(unsigned int width, unsigned int height, unsigned int channels)
@@ -19,4 +19,13 @@ void Canvas::put_pixel(int x, int y, RGBColor color) {
   m_data[p] = color.r;
   m_data[p + 1] = color.g;
   m_data[p + 2] = color.b;
+}
+
+Point3D<float> Canvas::canvasToViewport(const Point2D<int> &pixel) {
+  float viewportWidth = 1;
+  float viewportHeight = 1;
+  float viewportZ = 1;
+
+  return {pixel.x * (viewportWidth / this->width),
+          pixel.y * (viewportHeight / this->height), viewportZ};
 }

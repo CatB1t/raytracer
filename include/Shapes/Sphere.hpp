@@ -2,7 +2,7 @@
 
 #include "Vector/Vector2D.hpp"
 #include "Vector/Vector3D.hpp"
-#include "RGBColor.hpp"
+#include "Graphics/RGBColor.hpp"
 #include <cmath>
 
 struct Sphere {
