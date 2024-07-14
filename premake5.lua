@@ -10,6 +10,7 @@ project "Raytracer"
   language "C++"
   targetdir (build_path)
   objdir (build_path .. "/obj")
+  includedirs { "./include/" }
   files { "src/*.cpp", "src/*.hpp" }
 
   filter {"configurations:Debug"}
