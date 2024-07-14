@@ -3,11 +3,6 @@
 #include <cassert>
 #include <cmath>
 
-template <typename T> struct Point2D {
-  T x;
-  T y;
-};
-
 template <typename T> struct Point3D {
   T x = 0;
   T y = 0;

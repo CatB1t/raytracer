@@ -13,7 +13,8 @@
 #include "Lights/ambient.hpp"
 #include "Lights/directional.hpp"
 #include "Lights/point.hpp"
-#include "Point.hpp"
+#include "Vector/Vector2D.hpp"
+#include "Vector/Vector3D.hpp"
 #include "Sphere.hpp"
 
 struct Scene {

@@ -1,6 +1,6 @@
 #pragma once
 
-#include "../Point.hpp"
+#include "../Vector/Vector3D.hpp"
 
 struct PointLight {
   float intensity = 1;
