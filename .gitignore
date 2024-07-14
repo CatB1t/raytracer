@@ -1,4 +1,4 @@
-*.exe
-*.bmp
 .vscode/
 build/
+**/Makefile
+*.make
