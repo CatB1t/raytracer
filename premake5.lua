@@ -5,11 +5,15 @@ workspace "Raytracer"
 build_path = "build/%{cfg.buildcfg}-%{cfg.system}-%{cfg.architecture}"
 
 project "Raytracer"
+  targetname "raytracer"
+
   architecture "x86_64"
   kind "ConsoleApp"
   language "C++"
+
   targetdir (build_path)
   objdir (build_path .. "/obj")
+
   includedirs { "./include/" }
   files { "src/*.cpp", "src/*.hpp" }
 
