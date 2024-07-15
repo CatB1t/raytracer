@@ -1,14 +1,11 @@
 #include <algorithm>
 #include <cfloat>
 #include <cmath>
-#include <iostream>
 #include <string>
 #include <utility>
 
-#define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "Vendor/stb_image_write.h"
-
 #include "Core/Scene.hpp"
+#include "Graphics/BmpImage.hpp"
 #include "Graphics/Canvas.hpp"
 #include "Shapes/Sphere.hpp"
 #include "Vector/Vector2D.hpp"
@@ -110,8 +107,7 @@ RGBColor traceRay(Point3D<float> origin, Point3D<float> dir, float t_min,
 }
 
 int main() {
-  const std::string output_file = "raytrace.bmp";
-  Canvas canvas = {800, 800, 3};
+  BmpImage image = {"image", 800, 600, 3};
 
   Scene scene;
   scene.spheres.push_back(Sphere{1, {0, -1, 3}, {255, 0, 0}, 500.0f, 0.2f});
@@ -124,6 +120,7 @@ int main() {
 
   Point3D<float> camera_origin = {0, 0, 0};
 
+  Canvas& canvas = image.getCanvas();
   int i_range = canvas.width / 2;
   int y_range = canvas.height / 2;
 
@@ -135,14 +132,6 @@ int main() {
     }
   }
 
-  int result = stbi_write_bmp(output_file.c_str(), canvas.width, canvas.height,
-                              canvas.channels, canvas.get_data());
-
-  if (!result) {
-    std::cout << "Failed writing image" << output_file << "\n";
-    return -1;
-  }
-
-  std::cout << "Done Writing to " << output_file << "\n";
+  image.write();
   return 1;
 }
