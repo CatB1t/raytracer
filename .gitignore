@@ -1,4 +1,8 @@
 .vscode/
 build/
+.cache/
+!images/
+*.bmp
 **/Makefile
 *.make
+compile_commands.json
