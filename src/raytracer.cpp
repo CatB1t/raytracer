@@ -2,7 +2,6 @@
 #include <cfloat>
 #include <cmath>
 #include <string>
-#include <utility>
 
 #include "Core/Scene.hpp"
 #include "Graphics/BmpImage.hpp"
@@ -35,8 +34,13 @@ double calculateLighting(Vector3D light_dir, float light_intensity,
   return ret * light_intensity;
 }
 
-auto find_nearest_intersection(Vector3D origin, Vector3D dir, float t_min,
-                               float t_max, const Scene &scene) {
+struct HitInfo {
+  double distance = -1.0;
+  const Sphere *sphere = nullptr;
+};
+
+HitInfo *intersect_objects(Vector3D origin, Vector3D dir, float t_min,
+                           float t_max, const Scene &scene) {
   double closeset_sphere_distance = FLT_MAX;
   const Sphere *closeset_sphere = nullptr;
 
@@ -61,58 +65,66 @@ auto find_nearest_intersection(Vector3D origin, Vector3D dir, float t_min,
     delete intersect_points;
   }
 
-  return std::make_pair(closeset_sphere_distance, closeset_sphere);
+  if (!closeset_sphere)
+    return nullptr;
+
+  return new HitInfo{closeset_sphere_distance, closeset_sphere};
 }
 
 RGBColor traceRay(Vector3D origin, Vector3D dir, float t_min, float t_max,
                   Scene &scene, int depth) {
-  auto hit_point = find_nearest_intersection(origin, dir, t_min, t_max, scene);
+  HitInfo *hit = intersect_objects(origin, dir, t_min, t_max, scene);
 
-  if (!hit_point.second)
+  if (!hit)
     return scene.background_color;
 
-  float closeset_sphere_distance = hit_point.first;
-  const Sphere *closeset_sphere = hit_point.second;
   float total_intensity = scene.ambient_light.intensity;
 
-  Vector3D intersection_point = origin + dir * closeset_sphere_distance;
-  Vector3D normal_dir =
-      (intersection_point - closeset_sphere->center).normalize();
+  Vector3D intersection_point = origin + dir * hit->distance;
+  Vector3D normal_dir = (intersection_point - hit->sphere->center).normalize();
   const double normal_length = normal_dir.length();
 
   Vector3D view_dir = -1 * dir;
   constexpr double eps = 0.001;
 
   for (auto light : scene.directional_lights) {
-    auto hit_point = find_nearest_intersection(
-        intersection_point, light.direction, eps, FLT_MAX, scene);
-    if (!hit_point.second) // There's no object between light and point
-      total_intensity +=
-          calculateLighting(light.direction, light.intensity, normal_dir,
-                            view_dir, closeset_sphere->specular);
+    HitInfo *shadow_hit = intersect_objects(intersection_point, light.direction,
+                                            eps, FLT_MAX, scene);
+    if (shadow_hit) {
+      delete shadow_hit;
+      continue;
+    }
+    total_intensity +=
+        calculateLighting(light.direction, light.intensity, normal_dir,
+                          view_dir, hit->sphere->specular);
   }
 
   for (auto light : scene.point_lights) {
     Vector3D light_direction = light.position - intersection_point;
-    auto hit_point = find_nearest_intersection(intersection_point,
-                                               light_direction, eps, 1, scene);
-    if (!hit_point.second) // There's no object between light and point
-      total_intensity +=
-          calculateLighting(light_direction, light.intensity, normal_dir,
-                            view_dir, closeset_sphere->specular);
+    HitInfo *shadow_hit =
+        intersect_objects(intersection_point, light_direction, eps, 1, scene);
+    if (shadow_hit) {
+      delete shadow_hit;
+      continue;
+    }
+    total_intensity +=
+        calculateLighting(light_direction, light.intensity, normal_dir,
+                          view_dir, hit->sphere->specular);
   }
 
   RGBColor sphereColor =
-      std::clamp(total_intensity, 0.0f, 1.0f) * closeset_sphere->color;
+      std::clamp(total_intensity, 0.0f, 1.0f) * hit->sphere->color;
 
-  if (depth <= 0 | closeset_sphere->reflective <= 0)
+  float reflective = hit->sphere->reflective;
+  delete hit;
+
+  if (depth <= 0 | reflective <= 0)
     return sphereColor;
 
   Vector3D reflectedDir = view_dir.reflect(normal_dir);
   RGBColor reflectColor = traceRay(intersection_point, reflectedDir, 0.05f,
                                    FLT_MAX, scene, depth - 1);
-  return (reflectColor * closeset_sphere->reflective) +
-         (sphereColor * (1.0f - closeset_sphere->reflective));
+  return (reflectColor * reflective) + (sphereColor * (1.0f - reflective));
 }
 
 int main() {
