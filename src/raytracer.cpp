@@ -67,7 +67,7 @@ RGBColor traceRay(Vector3D<float> origin, Vector3D<float> dir, float t_min,
   auto hit_point = find_nearest_intersection(origin, dir, t_min, t_max, scene);
 
   if (!hit_point.second)
-    return {0, 0, 0}; // no-hit, background color
+    return scene.background_color;
 
   float closeset_sphere_distance = hit_point.first;
   const Sphere *closeset_sphere = hit_point.second;
@@ -106,7 +106,7 @@ RGBColor traceRay(Vector3D<float> origin, Vector3D<float> dir, float t_min,
 int main() {
   BmpImage image = {"image", 800, 800, 3};
 
-  Scene scene { 0.2f };
+  Scene scene { {0, 0, 0} , 0.2f };
 
   scene.spheres.push_back(Sphere{1, {0, -1, 3}, {255, 0, 0}, 500.0f, 0.2f});
   scene.spheres.push_back(Sphere{1, {-2, 0, 4}, {0, 255, 0}, 10.0f, 0.4f});
