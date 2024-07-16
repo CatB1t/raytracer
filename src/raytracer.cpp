@@ -7,39 +7,41 @@
 #include "Core/Scene.hpp"
 #include "Graphics/BmpImage.hpp"
 #include "Graphics/Canvas.hpp"
-#include "Shapes/Sphere.hpp"
-#include "Vector/Vector3D.hpp"
 #include "Lights/AmbientLight.hpp"
 #include "Lights/DirectionalLight.hpp"
 #include "Lights/PointLight.hpp"
+#include "Shapes/Sphere.hpp"
+#include "Vector/Vector3D.hpp"
 
 template <typename T> bool in_range(T val, T min, T max) {
   return val <= max && val >= min;
 }
 
-float calculateLighting(Vector3D<float> light_dir, float light_intensity, Vector3D<float> normal_dir,
-                        Vector3D<float> view_dir, float specular_component) {
-  float ret = 0.0f;
-  float n_dot_l = normal_dir.dot(light_dir);
+double calculateLighting(Vector3D light_dir, float light_intensity,
+                        Vector3D normal_dir, Vector3D view_dir,
+                        float specular_component) {
+  double ret = 0.0f;
+  double n_dot_l = normal_dir.dot(light_dir);
   if (n_dot_l > 0)
     ret += (n_dot_l / (light_dir.length()));
 
-  Vector3D<float> reflected_light = light_dir.reflect(normal_dir);
-  float v_dot_r = view_dir.dot(reflected_light);
+  Vector3D reflected_light = light_dir.reflect(normal_dir);
+  double v_dot_r = view_dir.dot(reflected_light);
 
   if (v_dot_r > 0)
-    ret += std::pow((v_dot_r / (view_dir.length() * reflected_light.length())), specular_component);
+    ret += std::pow((v_dot_r / (view_dir.length() * reflected_light.length())),
+                    specular_component);
 
   return ret * light_intensity;
 }
 
-auto find_nearest_intersection(Vector3D<float> origin, Vector3D<float> dir,
-                               float t_min, float t_max, const Scene &scene) {
-  float closeset_sphere_distance = FLT_MAX;
+auto find_nearest_intersection(Vector3D origin, Vector3D dir, float t_min,
+                               float t_max, const Scene &scene) {
+  double closeset_sphere_distance = FLT_MAX;
   const Sphere *closeset_sphere = nullptr;
 
   for (auto &sphere : scene.spheres) {
-   Vector2D<float> *intersect_points = sphere.intersect_ray(origin, dir);
+    Vector2D<float> *intersect_points = sphere.intersect_ray(origin, dir);
 
     if (!intersect_points)
       continue;
@@ -62,8 +64,8 @@ auto find_nearest_intersection(Vector3D<float> origin, Vector3D<float> dir,
   return std::make_pair(closeset_sphere_distance, closeset_sphere);
 }
 
-RGBColor traceRay(Vector3D<float> origin, Vector3D<float> dir, float t_min,
-                  float t_max, Scene &scene, int depth) {
+RGBColor traceRay(Vector3D origin, Vector3D dir, float t_min, float t_max,
+                  Scene &scene, int depth) {
   auto hit_point = find_nearest_intersection(origin, dir, t_min, t_max, scene);
 
   if (!hit_point.second)
@@ -73,40 +75,50 @@ RGBColor traceRay(Vector3D<float> origin, Vector3D<float> dir, float t_min,
   const Sphere *closeset_sphere = hit_point.second;
   float total_intensity = scene.ambient_light.intensity;
 
-  Vector3D<float> intersection_point = origin + dir * closeset_sphere_distance;
-  Vector3D<float> normal_dir = (intersection_point - closeset_sphere->center).normalize();
-  const float normal_length = normal_dir.length();
+  Vector3D intersection_point = origin + dir * closeset_sphere_distance;
+  Vector3D normal_dir =
+      (intersection_point - closeset_sphere->center).normalize();
+  const double normal_length = normal_dir.length();
 
-  Vector3D<float> view_dir = -1 * dir;
-  constexpr float eps = 0.01f;
+  Vector3D view_dir = -1 * dir;
+  constexpr double eps = 0.001;
 
   for (auto light : scene.directional_lights) {
-    auto hit_point = find_nearest_intersection(intersection_point, light.direction, eps, FLT_MAX, scene);
+    auto hit_point = find_nearest_intersection(
+        intersection_point, light.direction, eps, FLT_MAX, scene);
     if (!hit_point.second) // There's no object between light and point
-      total_intensity += calculateLighting(light.direction, light.intensity, normal_dir, view_dir, closeset_sphere->specular);
+      total_intensity +=
+          calculateLighting(light.direction, light.intensity, normal_dir,
+                            view_dir, closeset_sphere->specular);
   }
 
   for (auto light : scene.point_lights) {
-    Vector3D<float> light_direction = light.position - intersection_point;
-    auto hit_point = find_nearest_intersection(intersection_point, light_direction, eps, 1, scene);
+    Vector3D light_direction = light.position - intersection_point;
+    auto hit_point = find_nearest_intersection(intersection_point,
+                                               light_direction, eps, 1, scene);
     if (!hit_point.second) // There's no object between light and point
-      total_intensity += calculateLighting(light_direction, light.intensity, normal_dir, view_dir, closeset_sphere->specular);
+      total_intensity +=
+          calculateLighting(light_direction, light.intensity, normal_dir,
+                            view_dir, closeset_sphere->specular);
   }
 
-  RGBColor sphereColor = std::clamp(total_intensity, 0.0f, 1.0f) * closeset_sphere->color;
+  RGBColor sphereColor =
+      std::clamp(total_intensity, 0.0f, 1.0f) * closeset_sphere->color;
 
   if (depth <= 0 | closeset_sphere->reflective <= 0)
     return sphereColor;
 
-  Vector3D<float> reflectedDir = view_dir.reflect(normal_dir);
-  RGBColor reflectColor = traceRay(intersection_point, reflectedDir, 0.05f, FLT_MAX, scene, depth - 1);
-  return (reflectColor * closeset_sphere->reflective) + (sphereColor * (1.0f - closeset_sphere->reflective));
+  Vector3D reflectedDir = view_dir.reflect(normal_dir);
+  RGBColor reflectColor = traceRay(intersection_point, reflectedDir, 0.05f,
+                                   FLT_MAX, scene, depth - 1);
+  return (reflectColor * closeset_sphere->reflective) +
+         (sphereColor * (1.0f - closeset_sphere->reflective));
 }
 
 int main() {
   BmpImage image = {"image", 800, 800, 3};
 
-  Scene scene { {0, 0, 0} , 0.2f };
+  Scene scene{{0, 0, 0}, 0.2f};
 
   scene.spheres.push_back(Sphere{1, {0, -1, 3}, {255, 0, 0}, 500.0f, 0.2f});
   scene.spheres.push_back(Sphere{1, {-2, 0, 4}, {0, 255, 0}, 10.0f, 0.4f});
@@ -116,15 +128,15 @@ int main() {
   scene.point_lights.push_back(PointLight{0.6f, {2, 1, 0}});
   scene.directional_lights.push_back(DirectionalLight{0.2f, {1, 4, 4}});
 
-  Vector3D<float> camera_origin = {0, 0, 0};
+  Vector3D camera_origin = {0, 0, 0};
 
-  Canvas& canvas = image.getCanvas();
+  Canvas &canvas = image.getCanvas();
   int i_range = canvas.width / 2;
   int y_range = canvas.height / 2;
 
   for (int i = -i_range; i <= i_range; ++i) {
     for (int j = -y_range; j <= y_range; ++j) {
-      Vector3D<float> viewport_point = canvas.canvasToViewport({i, j});
+      Vector3D viewport_point = canvas.canvasToViewport({i, j});
       RGBColor color = traceRay(camera_origin, viewport_point, 1, 100, scene, 10);
       canvas.put_pixel(i, j, color);
     }

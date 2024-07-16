@@ -1,21 +1,20 @@
 #pragma once
 
+#include "Graphics/RGBColor.hpp"
 #include "Vector/Vector2D.hpp"
 #include "Vector/Vector3D.hpp"
-#include "Graphics/RGBColor.hpp"
 #include <cmath>
 
 struct Sphere {
 
   float radius = 1;
-  Vector3D<float> center;
+  Vector3D center;
   RGBColor color;
   float specular = -1.0f;
   float reflective = -1.0f;
 
-  Vector2D<float> *intersect_ray(Vector3D<float> origin,
-                                Vector3D<float> direction) const {
-    Vector3D<float> co = origin - center;
+  Vector2D<float> *intersect_ray(Vector3D origin, Vector3D direction) const {
+    Vector3D co = origin - center;
     float a = direction.dot(direction);
     float b = 2 * direction.dot(co);
     float c = co.dot(co) - radius * radius;

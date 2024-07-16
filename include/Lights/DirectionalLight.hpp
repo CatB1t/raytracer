@@ -5,5 +5,5 @@
 struct DirectionalLight {
 public:
   float intensity = 1;
-  Vector3D<float> direction;
+  Vector3D direction;
 };
