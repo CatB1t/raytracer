@@ -107,7 +107,7 @@ RGBColor traceRay(Point3D<float> origin, Point3D<float> dir, float t_min,
 }
 
 int main() {
-  BmpImage image = {"image", 800, 600, 3};
+  BmpImage image = {"image", 800, 800, 3};
 
   Scene scene;
   scene.spheres.push_back(Sphere{1, {0, -1, 3}, {255, 0, 0}, 500.0f, 0.2f});
