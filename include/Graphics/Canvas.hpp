@@ -16,7 +16,7 @@ public:
 
   void put_pixel(int x, int y, RGBColor color);
   const PixelColorT *get_data() { return m_data.data(); };
-  Point3D<float> canvasToViewport(const Point2D<int> &pixel);
+  Vector3D<float> canvasToViewport(const Vector2D<int> &pixel);
 
 private:
   std::vector<PixelColorT> m_data;
