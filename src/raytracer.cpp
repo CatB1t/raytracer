@@ -17,9 +17,8 @@ template <typename T> bool in_range(T val, T min, T max) {
   return val <= max && val >= min;
 }
 
-float calculateLighting(Vector3D<float> light_dir, Vector3D<float> normal_dir,
-                        Vector3D<float> view_dir, float light_intensity,
-                        float specular_component) {
+float calculateLighting(Vector3D<float> light_dir, float light_intensity, Vector3D<float> normal_dir,
+                        Vector3D<float> view_dir, float specular_component) {
   float ret = 0.0f;
   float n_dot_l = normal_dir.dot(light_dir);
   if (n_dot_l > 0)
@@ -84,15 +83,14 @@ RGBColor traceRay(Vector3D<float> origin, Vector3D<float> dir, float t_min,
   for (auto light : scene.directional_lights) {
     auto hit_point = find_nearest_intersection(intersection_point, light.direction, eps, FLT_MAX, scene);
     if (!hit_point.second) // There's no object between light and point
-      total_intensity += calculateLighting(light.direction, normal_dir, view_dir, light.intensity, closeset_sphere->specular);
+      total_intensity += calculateLighting(light.direction, light.intensity, normal_dir, view_dir, closeset_sphere->specular);
   }
 
   for (auto light : scene.point_lights) {
-    Point3D<float> light_dir = light.position - intersection_point;
-
-    auto hit_point = find_nearest_intersection(intersection_point, light_dir, eps, 1, scene);
+    Vector3D<float> light_direction = light.position - intersection_point;
+    auto hit_point = find_nearest_intersection(intersection_point, light_direction, eps, 1, scene);
     if (!hit_point.second) // There's no object between light and point
-      total_intensity += calculateLighting(light_dir, normal_dir, view_dir, light.intensity, closeset_sphere->specular);
+      total_intensity += calculateLighting(light_direction, light.intensity, normal_dir, view_dir, closeset_sphere->specular);
   }
 
   RGBColor sphereColor = std::clamp(total_intensity, 0.0f, 1.0f) * closeset_sphere->color;
@@ -108,7 +106,8 @@ RGBColor traceRay(Vector3D<float> origin, Vector3D<float> dir, float t_min,
 int main() {
   BmpImage image = {"image", 800, 800, 3};
 
-  Scene scene;
+  Scene scene { 0.2f };
+
   scene.spheres.push_back(Sphere{1, {0, -1, 3}, {255, 0, 0}, 500.0f, 0.2f});
   scene.spheres.push_back(Sphere{1, {-2, 0, 4}, {0, 255, 0}, 10.0f, 0.4f});
   scene.spheres.push_back(Sphere{1, {2, 0, 4}, {0, 0, 255}, 500.0f, 0.3f});
