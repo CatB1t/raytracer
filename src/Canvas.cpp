@@ -21,7 +21,7 @@ void Canvas::put_pixel(int x, int y, RGBColor color) {
   m_data[p + 2] = color.b;
 }
 
-Point3D<float> Canvas::canvasToViewport(const Point2D<int> &pixel) {
+Vector3D<float> Canvas::canvasToViewport(const Vector2D<int> &pixel) {
   float viewportWidth = 1;
   float viewportHeight = 1;
   float viewportZ = 1;

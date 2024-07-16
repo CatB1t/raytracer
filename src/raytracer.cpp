@@ -41,7 +41,7 @@ auto find_nearest_intersection(Vector3D<float> origin, Vector3D<float> dir,
   const Sphere *closeset_sphere = nullptr;
 
   for (auto &sphere : scene.spheres) {
-    Point2D<float> *intersect_points = sphere.intersect_ray(origin, dir);
+   Vector2D<float> *intersect_points = sphere.intersect_ray(origin, dir);
 
     if (!intersect_points)
       continue;
