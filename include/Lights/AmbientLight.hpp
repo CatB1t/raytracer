@@ -1,7 +1,6 @@
 #pragma once
 
-class AmbientLight {
+struct AmbientLight {
 public:
-  AmbientLight(float intensity);
   float intensity = 0.1;
 };

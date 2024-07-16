@@ -9,7 +9,6 @@
 #include "Graphics/Canvas.hpp"
 #include "Shapes/Sphere.hpp"
 #include "Vector/Vector3D.hpp"
-#include "Lights/Light.hpp"
 #include "Lights/AmbientLight.hpp"
 #include "Lights/DirectionalLight.hpp"
 #include "Lights/PointLight.hpp"
