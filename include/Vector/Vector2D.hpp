@@ -1,6 +1,6 @@
 #pragma once
 
-template <typename T> struct Point2D {
+template <typename T> struct Vector2D {
   T x;
   T y;
 };
