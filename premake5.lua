@@ -15,7 +15,7 @@ project "Raytracer"
   objdir (build_path .. "/obj")
 
   includedirs { "./include/" }
-  files { "src/**.cpp", "src/**.hpp" }
+  files { "./src/**.cpp" }
 
   filter {"configurations:Debug"}
     defines {"DEBUG"}
