@@ -1,3 +1,5 @@
+#pragma once
+
 #include "Core/Scene.hpp"
 #include "Shapes/Sphere.hpp"
 #include <cfloat>
