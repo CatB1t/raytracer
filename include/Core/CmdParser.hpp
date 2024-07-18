@@ -9,5 +9,8 @@ public:
   std::string getOptStr(const std::string& option);
   unsigned int getOptUint(const std::string& option);
 private:
+  bool _isOption(const std::string& opt);
+  void _cacheOptions(int argc, char *argv[]);
   std::unordered_map<std::string, std::string> m_arguments;
+  std::unordered_map<std::string, std::string> m_argumentsTypes;
 };
