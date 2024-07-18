@@ -1,3 +1,4 @@
+#include "Core/CmdParser.hpp"
 #include "Core/Raytracer.hpp"
 #include "Core/Scene.hpp"
 #include "Graphics/BmpImage.hpp"
@@ -7,8 +8,12 @@
 #include "Shapes/Sphere.hpp"
 #include "Vector/Vector3D.hpp"
 
-int main() {
-  BmpImage image = {"image", 800, 800, 3};
+int main(int argc, char *argv[]) {
+  CmdParser parser = {argc, argv};
+
+  unsigned int width = parser.getOptUint("-w");
+  unsigned int height = parser.getOptUint("-h");
+  BmpImage image = {parser.getOptStr("-o"), width, height, 3};
 
   Scene scene{{0, 0, 0}, 0.2f};
 
