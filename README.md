@@ -26,3 +26,8 @@ this raytracer can produce basic images with reflections and shading.
 - For toolsets like Visual Studio, you can simply load the generated solution IDE and build as you normally would.
 - If you have generated makefiles, run `make`
 - You will find the executable in the `build` directory, simply run `./raytracer`
+
+### Options
+- `-w` to specify width. default `800`
+- `-h` to specify height. default `800`
+- `-o` to specify output file. default `image`
