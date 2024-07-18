@@ -1,3 +1,5 @@
+#include <iostream>
+
 #include "Core/CmdParser.hpp"
 #include "Core/Raytracer.hpp"
 #include "Core/Scene.hpp"
@@ -7,6 +9,7 @@
 #include "Lights/PointLight.hpp"
 #include "Shapes/Sphere.hpp"
 #include "Vector/Vector3D.hpp"
+#include "Util/Timer.hpp"
 
 int main(int argc, char *argv[]) {
   CmdParser parser = {argc, argv};
@@ -31,6 +34,9 @@ int main(int argc, char *argv[]) {
   int i_range = canvas.width / 2;
   int y_range = canvas.height / 2;
 
+  Timer timer;
+  timer.start();
+
   for (int i = -i_range; i <= i_range; ++i) {
     for (int j = -y_range; j <= y_range; ++j) {
       Vector3D viewport_point = canvas.canvasToViewport({i, j});
@@ -38,6 +44,9 @@ int main(int argc, char *argv[]) {
       canvas.put_pixel(i, j, color);
     }
   }
+
+  timer.end();
+  std::cout << "Runtime: " << timer.getTime().count() << "ms. ";
 
   image.write();
   return 1;
