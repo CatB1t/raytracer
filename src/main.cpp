@@ -1,5 +1,6 @@
 #include <iostream>
 
+#include "Configuration/LuaConfigHandler.hpp"
 #include "Core/CmdParser.hpp"
 #include "Core/Raytracer.hpp"
 #include "Core/Scene.hpp"
@@ -18,17 +19,10 @@ int main(int argc, char *argv[]) {
   unsigned int height = parser.getOptUint("-h");
   BmpImage image = {parser.getOptStr("-o"), width, height, 3};
 
-  Scene scene{{0, 0, 0}, 0.2f};
-
-  scene.spheres.push_back(Sphere{1, {0, -1, 3}, {255, 0, 0}, 500.0f, 0.2f});
-  scene.spheres.push_back(Sphere{1, {-2, 0, 4}, {0, 255, 0}, 10.0f, 0.4f});
-  scene.spheres.push_back(Sphere{1, {2, 0, 4}, {0, 0, 255}, 500.0f, 0.3f});
-  scene.spheres.push_back(Sphere{5000, {0, -5001, 0}, {255, 255, 0}, 1000.0f, 0.5f});
-
-  scene.point_lights.push_back(PointLight{0.6f, {2, 1, 0}});
-  scene.directional_lights.push_back(DirectionalLight{0.2f, {1, 4, 4}});
-
-  Vector3D camera_origin = {0, 0, 0};
+   // TODO search file path properly
+  LuaConfigHandler cfg_handler {std::string("cfg.lua")};
+  cfg_handler.initialize();
+  Scene *scene = cfg_handler.getScene();
 
   Canvas &canvas = image.getCanvas();
   int i_range = canvas.width / 2;
@@ -47,6 +41,7 @@ int main(int argc, char *argv[]) {
 
   timer.end();
   std::cout << "Runtime: " << timer.getTime().count() << "ms. ";
+  delete scene;
 
   image.write();
   return 1;
