@@ -6,8 +6,10 @@
 #include "Lights/PointLight.hpp"
 #include "Lights/DirectionalLight.hpp"
 #include "Shapes/Sphere.hpp"
+#include "Vector/Vector3D.hpp"
 
 struct Scene {
+  Vector3D camera_position {0, 0, 0};
   RGBColor background_color;
   AmbientLight ambient_light;
   std::vector<PointLight> point_lights;
