@@ -18,10 +18,12 @@ this raytracer can produce basic images with reflections and shading.
 
 ### Prerequisites
 - A C++ compiler (e.g., GCC, Clang, MSVC)
-- Premake
+- [Premake5](https://premake.github.io/download)
+- [Lua](https://www.lua.org/download.html)
 
 ### Building
 - Get the code `git clone https://github.com/CatB1t/raytracer.git`
+- Clone `Lua` source code into the directory `vendor/lua/`
 - In the project directory, run `premake5 [action]`, e.g. `premake vs2022`
 - For toolsets like Visual Studio, you can simply load the generated solution IDE and build as you normally would.
 - If you have generated makefiles, run `make`
