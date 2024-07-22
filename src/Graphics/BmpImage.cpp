@@ -2,7 +2,7 @@
 #include <iostream>
 
 #define STB_IMAGE_WRITE_IMPLEMENTATION
-#include "Vendor/stb_image_write.h"
+#include "stb_image_write.h"
 
 BmpImage::BmpImage(const std::string &name, unsigned int width,
                    unsigned int height, unsigned int channels)

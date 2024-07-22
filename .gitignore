@@ -6,3 +6,5 @@ build/
 **/Makefile
 *.make
 compile_commands.json
+
+vendor/lua/
