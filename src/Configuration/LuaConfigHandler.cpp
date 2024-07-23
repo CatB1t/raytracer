@@ -77,13 +77,9 @@ int LuaConfigHandler::_set_backgroundcolor(lua_State *L) {
   Scene *scn_ptr = (Scene *)lua_touserdata(L, -1);
   lua_pop(L, 1);
 
-  lua_pushstring(L, "color");
-  lua_gettable(L, 1);
-
   scn_ptr->background_color.r = _pop_value<lua_Integer>(L, 1, luaL_checkinteger);
   scn_ptr->background_color.g = _pop_value<lua_Integer>(L, 2, luaL_checkinteger);
   scn_ptr->background_color.b = _pop_value<lua_Integer>(L, 3, luaL_checkinteger);
-  lua_pop(L, 1);
 
   return 0;
 }
