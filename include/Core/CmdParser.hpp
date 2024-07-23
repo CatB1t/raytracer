@@ -8,6 +8,7 @@ public:
   CmdParser(int argc, char *argv[]);
   std::string getOptStr(const std::string& option);
   unsigned int getOptUint(const std::string& option);
+  bool isValidOption(const std::string& opt);
 private:
   bool _isOption(const std::string& opt);
   void _cacheOptions(int argc, char *argv[]);

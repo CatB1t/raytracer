@@ -18,9 +18,17 @@ int main(int argc, char *argv[]) {
   BmpImage image = {parser.getOptStr("-o"), width, height, 3};
 
   std::filesystem::path parent_dir = std::filesystem::path(parser.getOptStr("_exec_path_")).parent_path();
-  std::filesystem::path read_config_path = std::filesystem::path(parent_dir).append(parser.getOptStr("-c"));
+  std::filesystem::path read_config_path = std::filesystem::path(parent_dir);
 
   LuaConfigHandler cfg_handler {};
+  if(parser.isValidOption("-g")) {
+    read_config_path /= parser.getOptStr("-g");
+    cfg_handler.generate_example_config(read_config_path);
+  }
+  else {
+    read_config_path /= parser.getOptStr("-c");
+  }
+
   if(!cfg_handler.read_config(read_config_path.c_str())) {
     printf("Failed to load scene configuration.\n");
     return -1;

@@ -12,6 +12,7 @@ CmdParser::CmdParser(int argc, char *argv[]) {
   m_argumentsTypes.insert(std::make_pair("-h", "uint"));
   m_argumentsTypes.insert(std::make_pair("-o", "str"));
   m_argumentsTypes.insert(std::make_pair("-c", "str"));
+  m_argumentsTypes.insert(std::make_pair("-g", "str"));
 
   // Default values
   m_arguments.insert(std::make_pair("-w", "800"));
@@ -20,6 +21,10 @@ CmdParser::CmdParser(int argc, char *argv[]) {
   m_arguments.insert(std::make_pair("-c", "scene.lua"));
 
   _cacheOptions(argc, argv);
+}
+
+bool CmdParser::isOptionKey(const std::string &option) {
+  return !(m_arguments.find(option) == m_arguments.end());
 }
 
 bool CmdParser::_isOption(const std::string &option) {

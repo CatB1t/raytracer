@@ -6,10 +6,12 @@
 #include "lua.hpp"
 #include <string>
 #include <unordered_map>
+#include <filesystem>
 
 class LuaConfigHandler {
 public:
   LuaConfigHandler();
+  bool generate_example_config(std::filesystem::path path);
   bool read_config(const std::string &filepath);
   Scene *getScene() const;
 

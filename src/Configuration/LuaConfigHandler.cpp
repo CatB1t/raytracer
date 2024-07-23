@@ -5,12 +5,49 @@
 #include "Vector/Vector3D.hpp"
 #include "lua.hpp"
 #include <cstdio>
+#include <fstream>
 
 #define _RAYTRACER_LUA_SCENE_ "_RAYTRACER_LUA_SCENE_ADDRESS_"
 
 Scene *LuaConfigHandler::getScene() const { return m_scene; }
 
 LuaConfigHandler::LuaConfigHandler() {}
+
+bool LuaConfigHandler::generate_example_config(std::filesystem::path path) {
+  if(std::filesystem::exists(path)) {
+    printf("file %s already exists.\n", path.c_str());
+    return false;
+  }
+
+  constexpr const char *str = R"(-- Raytracer example config
+local RED = { 255, 0, 0 }
+local GREEN = { 0, 255, 0 }
+local BLACK = { 0, 0, 0 }
+
+-- sets maximum ray tracing depth, try setting it to 0 and see the difference!
+set_tracing_depth(3)
+set_backgroundcolor (BLACK)
+
+create_camera { position = {0, 0, 0} }
+
+-- Spheres
+-- create_sphere (radius, position, color, specular, reflective)
+create_sphere { radius = 1, position = { 0, -1, 3 }, color = RED , spec = 500, ref = 0.2 }
+create_sphere { radius = 1, position = { -2, 0, 4 }, color = GREEN , spec = 10, ref = 0.4 }
+create_sphere { radius = 1, position = { 2, 0, 4 }, color = { 0, 0, 255 } , spec = 500, ref = 0.3 }
+create_sphere { radius = 5000, position = { 0,-5001, 0}, color = { 255, 255, 255 } , spec = 1000, ref = 0.5 }
+
+-- Lighting
+set_ambientlight(0.2)
+create_dirlight { intensity = 0.6, direction = { 2, 1, 0 } }
+create_pointlight { intensity = 0.2, position = { 1, 4, 4 } })";
+
+  std::fstream file {path.c_str(), std::ios_base::out};
+  file << str << std::endl;
+  file.close();
+
+  return true;
+}
 
 bool LuaConfigHandler::read_config(const std::string &filepath) {
   lua_State *state = luaL_newstate();
