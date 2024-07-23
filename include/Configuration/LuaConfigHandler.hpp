@@ -23,12 +23,16 @@ private:
 
   void _define_globals(lua_State *L);
   static int _create_camera(lua_State *L);
+  static int _set_backgroundcolor(lua_State *L);
+  static int _set_ambientlight(lua_State *L);
   static int _create_sphere(lua_State *L);
   static int _create_dirlight(lua_State *L);
   static int _create_pointlight(lua_State *L);
 
   std::unordered_map<std::string, lua_CFunction> _fn_mappings = {
       {"create_camera", _create_camera},
+      {"set_ambientlight", _set_ambientlight},
+      {"set_backgroundcolor", _set_backgroundcolor},
       {"create_sphere", _create_sphere},
       {"create_dirlight", _create_dirlight},
       {"create_pointlight", _create_pointlight},

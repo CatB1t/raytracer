@@ -37,7 +37,61 @@ void LuaConfigHandler::_define_globals(lua_State *L) {
 }
 
 int LuaConfigHandler::_create_camera(lua_State *L) {
-  printf("Create Camera Called\n");
+  if (!lua_istable(L, 1)) {
+    luaL_error(L, "Argument must be a table");
+  }
+
+  lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
+  lua_gettable(L, LUA_REGISTRYINDEX);
+  Scene *scn_ptr = (Scene *)lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  lua_pushstring(L, "position");
+  lua_gettable(L, 1);
+
+  scn_ptr->camera_position.x = _pop_value<lua_Number>(L, 1, luaL_checknumber);
+  scn_ptr->camera_position.y = _pop_value<lua_Number>(L, 2, luaL_checknumber);
+  scn_ptr->camera_position.z = _pop_value<lua_Number>(L, 3, luaL_checknumber);
+  lua_pop(L, 4);
+
+  return 0;
+}
+
+int LuaConfigHandler::_set_backgroundcolor(lua_State *L) {
+  if (!lua_istable(L, 1)) {
+    luaL_error(L, "Argument must be a table");
+  }
+
+  lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
+  lua_gettable(L, LUA_REGISTRYINDEX);
+  Scene *scn_ptr = (Scene *)lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  lua_pushstring(L, "color");
+  lua_gettable(L, 1);
+
+  scn_ptr->background_color.r = _pop_value<lua_Integer>(L, 1, luaL_checkinteger);
+  scn_ptr->background_color.g = _pop_value<lua_Integer>(L, 2, luaL_checkinteger);
+  scn_ptr->background_color.b = _pop_value<lua_Integer>(L, 3, luaL_checkinteger);
+  lua_pop(L, 4);
+
+  return 0;
+}
+
+int LuaConfigHandler::_set_ambientlight(lua_State *L) {
+  if (!lua_istable(L, 1)) {
+    luaL_error(L, "Argument must be a table");
+  }
+
+  lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
+  lua_gettable(L, LUA_REGISTRYINDEX);
+  Scene *scn_ptr = (Scene *)lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  lua_getfield(L, 1, "intensity");
+  scn_ptr->ambient_light.intensity = luaL_checknumber(L, -1);
+  lua_pop(L, 1);
+
   return 0;
 }
 
