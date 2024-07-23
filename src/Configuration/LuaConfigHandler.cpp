@@ -8,10 +8,9 @@
 
 Scene *LuaConfigHandler::getScene() const { return m_scene; }
 
-LuaConfigHandler::LuaConfigHandler(const std::string &filepath)
-    : m_filepath(filepath) {}
+LuaConfigHandler::LuaConfigHandler() {}
 
-bool LuaConfigHandler::initialize() {
+bool LuaConfigHandler::read_config(const std::string &filepath) {
   lua_State *state = luaL_newstate();
   _define_globals(state);
 
@@ -20,7 +19,7 @@ bool LuaConfigHandler::initialize() {
   lua_pushlightuserdata(state, m_scene);
   lua_settable(state, LUA_REGISTRYINDEX);
 
-  if (luaL_dofile(state, m_filepath.c_str()) != LUA_OK) {
+  if (luaL_dofile(state, filepath.c_str()) != LUA_OK) {
     fprintf(stderr, "Lua failed: %s\n", lua_tostring(state, -1));
     lua_close(state);
     return false;

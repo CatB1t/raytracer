@@ -16,9 +16,13 @@ int main(int argc, char *argv[]) {
   unsigned int height = parser.getOptUint("-h");
   BmpImage image = {parser.getOptStr("-o"), width, height, 3};
 
-   // TODO search file path properly
-  LuaConfigHandler cfg_handler {std::string("cfg.lua")};
-  cfg_handler.read_config();
+  // TODO search file path properly
+  LuaConfigHandler cfg_handler;
+  if(!cfg_handler.read_config(std::string("cfg.lua"))) {
+    printf("Failed to load scene configuration.\n");
+    return -1;
+  }
+
   Scene *scene = cfg_handler.getScene();
 
   Canvas &canvas = image.getCanvas();

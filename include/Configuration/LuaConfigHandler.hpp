@@ -7,12 +7,11 @@
 
 class LuaConfigHandler {
 public:
-  LuaConfigHandler(const std::string &filepath);
-  bool read_config();
+  LuaConfigHandler();
+  bool read_config(const std::string &filepath);
   Scene *getScene() const;
 
 private:
-  std::string m_filepath;
   Scene *m_scene;
 
   template<typename T>
