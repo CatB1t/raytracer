@@ -18,7 +18,7 @@ int main(int argc, char *argv[]) {
   BmpImage image = {parser.getOptStr("-o"), width, height, 3};
 
   std::filesystem::path parent_dir = std::filesystem::path(parser.getOptStr("_exec_path_")).parent_path();
-  std::filesystem::path read_config_path = std::filesystem::path(parent_dir).append("cfg.lua");
+  std::filesystem::path read_config_path = std::filesystem::path(parent_dir).append(parser.getOptStr("-c"));
 
   LuaConfigHandler cfg_handler {};
   if(!cfg_handler.read_config(read_config_path.c_str())) {

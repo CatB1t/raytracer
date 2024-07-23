@@ -11,11 +11,13 @@ CmdParser::CmdParser(int argc, char *argv[]) {
   m_argumentsTypes.insert(std::make_pair("-w", "uint"));
   m_argumentsTypes.insert(std::make_pair("-h", "uint"));
   m_argumentsTypes.insert(std::make_pair("-o", "str"));
+  m_argumentsTypes.insert(std::make_pair("-c", "str"));
 
   // Default values
   m_arguments.insert(std::make_pair("-w", "800"));
   m_arguments.insert(std::make_pair("-h", "800"));
   m_arguments.insert(std::make_pair("-o", "image"));
+  m_arguments.insert(std::make_pair("-c", "scene.lua"));
 
   _cacheOptions(argc, argv);
 }
