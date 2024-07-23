@@ -21,7 +21,7 @@ int main(int argc, char *argv[]) {
 
    // TODO search file path properly
   LuaConfigHandler cfg_handler {std::string("cfg.lua")};
-  cfg_handler.initialize();
+  cfg_handler.read_config();
   Scene *scene = cfg_handler.getScene();
 
   Canvas &canvas = image.getCanvas();

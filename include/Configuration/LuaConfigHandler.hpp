@@ -8,7 +8,7 @@
 class LuaConfigHandler {
 public:
   LuaConfigHandler(const std::string &filepath);
-  bool initialize();
+  bool read_config();
   Scene *getScene() const;
 
 private:
