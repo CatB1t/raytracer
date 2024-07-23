@@ -25,6 +25,8 @@ bool CmdParser::_isOption(const std::string &option) {
 }
 
 void CmdParser::_cacheOptions(int argc, char *argv[]) {
+  m_arguments.insert(std::make_pair("_exec_path_", argv[0]));
+
   for (int i = 1; i < argc; ++i) {
     char *str = argv[i];
 
