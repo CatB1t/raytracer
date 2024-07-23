@@ -1,3 +1,4 @@
+#include <cstdlib>
 #include <iostream>
 #include <filesystem>
 
@@ -23,7 +24,8 @@ int main(int argc, char *argv[]) {
   LuaConfigHandler cfg_handler {};
   if(parser.isValidOption("-g")) {
     read_config_path /= parser.getOptStr("-g");
-    cfg_handler.generate_example_config(read_config_path);
+    if(!cfg_handler.generate_example_config(read_config_path))
+      return EXIT_FAILURE;
   }
   else {
     read_config_path /= parser.getOptStr("-c");
@@ -31,7 +33,7 @@ int main(int argc, char *argv[]) {
 
   if(!cfg_handler.read_config(read_config_path.c_str())) {
     printf("Failed to load scene configuration.\n");
-    return -1;
+    return EXIT_FAILURE;
   }
 
   Scene *scene = cfg_handler.getScene();
@@ -56,5 +58,5 @@ int main(int argc, char *argv[]) {
   delete scene;
 
   image.write();
-  return 1;
+  return EXIT_SUCCESS;
 }
