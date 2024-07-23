@@ -20,6 +20,14 @@ private:
   static Vector3D _pop_vector3d(lua_State *L, int table_index, const char* field_name);
 
   template<typename T>
+  static T _pop_table_field(lua_State *L, int table_index, const char* field_name, T (*fn_ptr) (lua_State *L, int index)) {
+    lua_getfield(L, table_index, field_name);
+    T val = fn_ptr(L, -1);
+    lua_pop(L, 1);
+    return val;
+  }
+
+  template<typename T>
   inline static T _pop_value(lua_State *L, int index, T (*fn_ptr) (lua_State *L, int index)) {
     lua_pushinteger(L, index);
     lua_gettable(L, -2);

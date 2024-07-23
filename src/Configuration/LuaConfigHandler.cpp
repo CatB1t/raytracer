@@ -124,21 +124,11 @@ int LuaConfigHandler::_create_sphere(lua_State *L) {
   }
 
   Sphere sphere;
-
-  lua_getfield(L, 1, "radius");
-  sphere.radius = luaL_checknumber(L, -1);
-  lua_pop(L, 1);
-
+  sphere.radius = _pop_table_field<lua_Number>(L, 1, "radius", luaL_checknumber);
   sphere.center = _pop_vector3d(L, 1, "position");
   sphere.color = _pop_color(L, 1, "color");
-
-  lua_getfield(L, 1, "spec");
-  sphere.specular = luaL_checknumber(L, -1);
-  lua_pop(L, 1);
-
-  lua_getfield(L, 1, "ref");
-  sphere.reflective = luaL_checknumber(L, -1);
-  lua_pop(L, 1);
+  sphere.specular = _pop_table_field<lua_Number>(L, 1, "spec", luaL_checknumber);
+  sphere.reflective = _pop_table_field<lua_Number>(L, 1, "ref", luaL_checknumber);
 
   lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
   lua_gettable(L, LUA_REGISTRYINDEX);
@@ -155,11 +145,7 @@ int LuaConfigHandler::_create_dirlight(lua_State *L) {
   }
 
   DirectionalLight light;
-
-  lua_getfield(L, 1, "intensity");
-  light.intensity = luaL_checknumber(L, -1);
-  lua_pop(L, 1);
-
+  light.intensity = _pop_table_field<lua_Number>(L, 1, "intensity", luaL_checknumber);
   light.direction = _pop_vector3d(L, 1, "direction");
 
   lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
@@ -177,11 +163,7 @@ int LuaConfigHandler::_create_pointlight(lua_State *L) {
   }
 
   PointLight light;
-
-  lua_getfield(L, 1, "intensity");
-  light.intensity = luaL_checknumber(L, -1);
-  lua_pop(L, 1);
-
+  light.intensity = _pop_table_field(L, 1, "intensity", luaL_checknumber);
   light.position = _pop_vector3d(L, 1, "position");
 
   lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
