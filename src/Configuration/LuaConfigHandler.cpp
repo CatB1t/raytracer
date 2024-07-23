@@ -39,14 +39,17 @@ void LuaConfigHandler::_define_globals(lua_State *L) {
 }
 
 RGBColor LuaConfigHandler::_pop_color(lua_State *L, int table_index, const char* field_name) {
+  assert(table_index >= 1 && "negative indexing is not supported for table");
   RGBColor color;
 
-  if (field_name)
+  if (field_name) {
     lua_getfield(L, table_index, field_name);
+    table_index += 1;
+  }
 
-  color.r = _pop_value<lua_Integer>(L, 1, luaL_checkinteger);
-  color.g = _pop_value<lua_Integer>(L, 2, luaL_checkinteger);
-  color.b = _pop_value<lua_Integer>(L, 3, luaL_checkinteger);
+  color.r = _pop_table_field<lua_Integer>(L, table_index, 1, luaL_checkinteger);
+  color.g = _pop_table_field<lua_Integer>(L, table_index, 2, luaL_checkinteger);
+  color.b = _pop_table_field<lua_Integer>(L, table_index, 3, luaL_checkinteger);
 
   if (field_name)
     lua_pop(L, 1);
@@ -55,14 +58,17 @@ RGBColor LuaConfigHandler::_pop_color(lua_State *L, int table_index, const char*
 }
 
 Vector3D LuaConfigHandler::_pop_vector3d(lua_State *L, int table_index, const char* field_name) {
+  assert(table_index >= 1 && "negative indexing is not supported for table");
   Vector3D vec;
 
-  if (field_name)
+  if (field_name) {
     lua_getfield(L, table_index, field_name);
+    table_index += 1;
+  }
 
-  vec.x = _pop_value<lua_Number>(L, 1, luaL_checknumber);
-  vec.y = _pop_value<lua_Number>(L, 2, luaL_checknumber);
-  vec.z = _pop_value<lua_Number>(L, 3, luaL_checknumber);
+  vec.x = _pop_table_field<lua_Number>(L, table_index, 1, luaL_checknumber);
+  vec.y = _pop_table_field<lua_Number>(L, table_index, 2, luaL_checknumber);
+  vec.z = _pop_table_field<lua_Number>(L, table_index, 3, luaL_checknumber);
 
   if (field_name)
     lua_pop(L, 1);

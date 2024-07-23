@@ -28,9 +28,9 @@ private:
   }
 
   template<typename T>
-  inline static T _pop_value(lua_State *L, int index, T (*fn_ptr) (lua_State *L, int index)) {
+  inline static T _pop_table_field(lua_State *L, int table_index, int index, T (*fn_ptr) (lua_State *L, int index)) {
     lua_pushinteger(L, index);
-    lua_gettable(L, -2);
+    lua_gettable(L, table_index);
     T val = fn_ptr(L, -1);
     lua_pop(L, 1);
     return val;
