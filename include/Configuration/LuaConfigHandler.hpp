@@ -22,6 +22,7 @@ private:
   }
 
   void _define_globals(lua_State *L);
+  static int _set_tracing_depth(lua_State *L);
   static int _create_camera(lua_State *L);
   static int _set_backgroundcolor(lua_State *L);
   static int _set_ambientlight(lua_State *L);
@@ -30,6 +31,7 @@ private:
   static int _create_pointlight(lua_State *L);
 
   std::unordered_map<std::string, lua_CFunction> _fn_mappings = {
+      {"set_tracing_depth", _set_tracing_depth},
       {"create_camera", _create_camera},
       {"set_ambientlight", _set_ambientlight},
       {"set_backgroundcolor", _set_backgroundcolor},

@@ -36,6 +36,16 @@ void LuaConfigHandler::_define_globals(lua_State *L) {
   }
 }
 
+int LuaConfigHandler::_set_tracing_depth(lua_State *L) {
+  lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
+  lua_gettable(L, LUA_REGISTRYINDEX);
+  Scene *scn_ptr = (Scene *)lua_touserdata(L, -1);
+  lua_pop(L, 1);
+
+  scn_ptr->tracing_depth = luaL_checkinteger(L, 1);
+  return 0;
+}
+
 int LuaConfigHandler::_create_camera(lua_State *L) {
   if (!lua_istable(L, 1)) {
     luaL_error(L, "Argument must be a table");

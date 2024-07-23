@@ -9,6 +9,7 @@
 #include "Vector/Vector3D.hpp"
 
 struct Scene {
+  int tracing_depth = 3; // TODO should not be here
   Vector3D camera_position {0, 0, 0};
   RGBColor background_color;
   AmbientLight ambient_light;
