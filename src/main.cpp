@@ -14,13 +14,14 @@
 int main(int argc, char *argv[]) {
   CmdParser parser = {argc, argv};
 
+  std::filesystem::path parent_dir = std::filesystem::path(parser.getOptStr("_exec_path_")).parent_path();
+
   unsigned int width = parser.getOptUint("-w");
   unsigned int height = parser.getOptUint("-h");
-  BmpImage image = {parser.getOptStr("-o"), width, height, 3};
+  std::filesystem::path image_path = std::filesystem::path(parent_dir).append(parser.getOptStr("-o"));
+  BmpImage image = {image_path, width, height, 3};
 
-  std::filesystem::path parent_dir = std::filesystem::path(parser.getOptStr("_exec_path_")).parent_path();
   std::filesystem::path read_config_path = std::filesystem::path(parent_dir);
-
   LuaConfigHandler cfg_handler {};
   if(parser.isValidOption("-g")) {
     read_config_path /= parser.getOptStr("-g");
