@@ -35,7 +35,7 @@ create_camera { position = {0, 0, 0} }
 create_sphere { radius = 1, position = { 0, -1, 3 }, color = RED , spec = 500, ref = 0.2 }
 create_sphere { radius = 1, position = { -2, 0, 4 }, color = GREEN , spec = 10, ref = 0.4 }
 create_sphere { radius = 1, position = { 2, 0, 4 }, color = { 0, 0, 255 } , spec = 500, ref = 0.3 }
-create_sphere { radius = 5000, position = { 0,-5001, 0}, color = { 255, 255, 255 } , spec = 1000, ref = 0.5 }
+create_sphere { radius = 5000, position = { 0,-5001, 0}, color = { 255, 255, 0 } , spec = 1000, ref = 0.5 }
 
 -- Lighting
 set_ambientlight(0.2)
