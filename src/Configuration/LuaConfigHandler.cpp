@@ -89,19 +89,12 @@ int LuaConfigHandler::_set_backgroundcolor(lua_State *L) {
 }
 
 int LuaConfigHandler::_set_ambientlight(lua_State *L) {
-  if (!lua_istable(L, 1)) {
-    luaL_error(L, "Argument must be a table");
-  }
-
   lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
   lua_gettable(L, LUA_REGISTRYINDEX);
   Scene *scn_ptr = (Scene *)lua_touserdata(L, -1);
   lua_pop(L, 1);
 
-  lua_getfield(L, 1, "intensity");
   scn_ptr->ambient_light.intensity = luaL_checknumber(L, -1);
-  lua_pop(L, 1);
-
   return 0;
 }
 
