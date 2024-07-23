@@ -62,7 +62,7 @@ int LuaConfigHandler::_create_camera(lua_State *L) {
   scn_ptr->camera_position.x = _pop_value<lua_Number>(L, 1, luaL_checknumber);
   scn_ptr->camera_position.y = _pop_value<lua_Number>(L, 2, luaL_checknumber);
   scn_ptr->camera_position.z = _pop_value<lua_Number>(L, 3, luaL_checknumber);
-  lua_pop(L, 4);
+  lua_pop(L, 1);
 
   return 0;
 }
@@ -83,7 +83,7 @@ int LuaConfigHandler::_set_backgroundcolor(lua_State *L) {
   scn_ptr->background_color.r = _pop_value<lua_Integer>(L, 1, luaL_checkinteger);
   scn_ptr->background_color.g = _pop_value<lua_Integer>(L, 2, luaL_checkinteger);
   scn_ptr->background_color.b = _pop_value<lua_Integer>(L, 3, luaL_checkinteger);
-  lua_pop(L, 4);
+  lua_pop(L, 1);
 
   return 0;
 }
@@ -122,7 +122,7 @@ int LuaConfigHandler::_create_sphere(lua_State *L) {
   sphere.center.x = _pop_value<lua_Number>(L, 1, luaL_checknumber);
   sphere.center.y = _pop_value<lua_Number>(L, 2, luaL_checknumber);
   sphere.center.z = _pop_value<lua_Number>(L, 3, luaL_checknumber);
-  lua_pop(L, 4);
+  lua_pop(L, 1);
 
   lua_pushstring(L, "color");
   lua_gettable(L, 1);
@@ -130,7 +130,7 @@ int LuaConfigHandler::_create_sphere(lua_State *L) {
   sphere.color.r = _pop_value<lua_Integer>(L, 1, luaL_checkinteger);
   sphere.color.g = _pop_value<lua_Integer>(L, 2, luaL_checkinteger);
   sphere.color.b = _pop_value<lua_Integer>(L, 3, luaL_checkinteger);
-  lua_pop(L, 4);
+  lua_pop(L, 1);
 
   lua_getfield(L, 1, "spec");
   sphere.specular = luaL_checknumber(L, -1);
@@ -166,7 +166,7 @@ int LuaConfigHandler::_create_dirlight(lua_State *L) {
   light.direction.x = _pop_value<lua_Number>(L, 1, luaL_checknumber);
   light.direction.y = _pop_value<lua_Number>(L, 2, luaL_checknumber);
   light.direction.z = _pop_value<lua_Number>(L, 3, luaL_checknumber);
-  lua_pop(L, 4);
+  lua_pop(L, 1);
 
   lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
   lua_gettable(L, LUA_REGISTRYINDEX);
@@ -194,7 +194,7 @@ int LuaConfigHandler::_create_pointlight(lua_State *L) {
   light.position.x = _pop_value<lua_Number>(L, 1, luaL_checknumber);
   light.position.y = _pop_value<lua_Number>(L, 2, luaL_checknumber);
   light.position.z = _pop_value<lua_Number>(L, 3, luaL_checknumber);
-  lua_pop(L, 4);
+  lua_pop(L, 1);
 
   lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
   lua_gettable(L, LUA_REGISTRYINDEX);
