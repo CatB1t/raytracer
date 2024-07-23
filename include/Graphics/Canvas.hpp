@@ -17,9 +17,11 @@ public:
   void put_pixel(int x, int y, RGBColor color);
   const PixelColorT *get_data() { return m_data.data(); };
   Vector3D canvasToViewport(const Vector2D<int> &pixel);
+  unsigned int get_rangeX() const { return m_rangeX; };
+  unsigned int get_rangeY() const { return m_rangeY; };
 
 private:
   std::vector<PixelColorT> m_data;
-  int m_rangeX = 0;
-  int m_rangeY = 0;
+  const unsigned int m_rangeX;
+  const unsigned int m_rangeY;
 };

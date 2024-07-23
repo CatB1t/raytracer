@@ -26,13 +26,13 @@ int main(int argc, char *argv[]) {
   Scene *scene = cfg_handler.getScene();
 
   Canvas &canvas = image.getCanvas();
-  int i_range = canvas.width / 2;
-  int y_range = canvas.height / 2;
+  int x_range = canvas.get_rangeX();
+  int y_range = canvas.get_rangeY();
 
   Timer timer;
   timer.start();
 
-  for (int i = -i_range; i <= i_range; ++i) {
+  for (int i = -x_range; i <= x_range; ++i) {
     for (int j = -y_range; j <= y_range; ++j) {
       Vector3D viewport_point = canvas.canvasToViewport({i, j});
       RGBColor color = Raytracer::traceRay(scene->camera_position, viewport_point, 1, 100, *scene, scene->tracing_depth);

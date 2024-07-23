@@ -2,10 +2,8 @@
 #include <cmath>
 
 Canvas::Canvas(unsigned int width, unsigned int height, unsigned int channels)
-    : width{width}, height{height}, channels(channels) {
+    : width{width}, height{height}, channels(channels), m_rangeX (width/2), m_rangeY(height/2) {
   m_data.resize(this->width * this->height * this->channels);
-  m_rangeX = this->width / 2;
-  m_rangeY = this->height / 2;
 };
 
 void Canvas::put_pixel(int x, int y, RGBColor color) {
