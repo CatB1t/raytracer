@@ -23,7 +23,7 @@ CmdParser::CmdParser(int argc, char *argv[]) {
   _cacheOptions(argc, argv);
 }
 
-bool CmdParser::isOptionKey(const std::string &option) {
+bool CmdParser::isValidOption(const std::string &option) {
   return !(m_arguments.find(option) == m_arguments.end());
 }
 
