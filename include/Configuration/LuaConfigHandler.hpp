@@ -1,6 +1,8 @@
 #pragma once
 
 #include "Core/Scene.hpp"
+#include "Graphics/RGBColor.hpp"
+#include "Vector/Vector3D.hpp"
 #include "lua.hpp"
 #include <string>
 #include <unordered_map>
@@ -13,6 +15,9 @@ public:
 
 private:
   Scene *m_scene;
+
+  static RGBColor _pop_color(lua_State *L, int table_index, const char* field_name);
+  static Vector3D _pop_vector3d(lua_State *L, int table_index, const char* field_name);
 
   template<typename T>
   inline static T _pop_value(lua_State *L, int index, T (*fn_ptr) (lua_State *L, int index)) {
