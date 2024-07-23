@@ -29,6 +29,7 @@ project "Raytracer"
   architecture "x86_64"
   kind "ConsoleApp"
   language "C++"
+  cppdialect "C++17"
 
   targetdir (build_path)
   objdir (build_path .. "/obj")
