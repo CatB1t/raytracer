@@ -11,6 +11,14 @@
 
 LuaConfigHandler::LuaConfigHandler() {}
 
+Scene* LuaConfigHandler::_get_scene(lua_State *L) {
+  lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
+  lua_gettable(L, LUA_REGISTRYINDEX);
+  Scene *scn_ptr = (Scene *)lua_touserdata(L, -1);
+  lua_pop(L, 1);
+  return scn_ptr;
+}
+
 bool LuaConfigHandler::generate_example_config(std::filesystem::path path) {
   if(std::filesystem::exists(path)) {
     printf("file %s already exists.\n", path.c_str());
@@ -111,12 +119,7 @@ Vector3D LuaConfigHandler::_pop_vector3d(lua_State *L, int table_index, const ch
 }
 
 int LuaConfigHandler::_set_tracing_depth(lua_State *L) {
-  lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
-  lua_gettable(L, LUA_REGISTRYINDEX);
-  Scene *scn_ptr = (Scene *)lua_touserdata(L, -1);
-  lua_pop(L, 1);
-
-  scn_ptr->tracing_depth = luaL_checkinteger(L, 1);
+  _get_scene(L)->tracing_depth = luaL_checkinteger(L, 1);
   return 0;
 }
 
@@ -125,12 +128,7 @@ int LuaConfigHandler::_create_camera(lua_State *L) {
     luaL_error(L, "Argument must be a table");
   }
 
-  lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
-  lua_gettable(L, LUA_REGISTRYINDEX);
-  Scene *scn_ptr = (Scene *)lua_touserdata(L, -1);
-  lua_pop(L, 1);
-
-  scn_ptr->camera_position = _pop_vector3d(L, 1, "position");
+  _get_scene(L)->camera_position = _pop_vector3d(L, 1, "position");
   return 0;
 }
 
@@ -139,22 +137,12 @@ int LuaConfigHandler::_set_backgroundcolor(lua_State *L) {
     luaL_error(L, "Argument must be a table");
   }
 
-  lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
-  lua_gettable(L, LUA_REGISTRYINDEX);
-  Scene *scn_ptr = (Scene *)lua_touserdata(L, -1);
-  lua_pop(L, 1);
-
-  scn_ptr->background_color = _pop_color(L, 1, nullptr);
+  _get_scene(L)->background_color = _pop_color(L, 1, nullptr);
   return 0;
 }
 
 int LuaConfigHandler::_set_ambientlight(lua_State *L) {
-  lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
-  lua_gettable(L, LUA_REGISTRYINDEX);
-  Scene *scn_ptr = (Scene *)lua_touserdata(L, -1);
-  lua_pop(L, 1);
-
-  scn_ptr->ambient_light.intensity = luaL_checknumber(L, -1);
+  _get_scene(L)->ambient_light.intensity = luaL_checknumber(L, -1);
   return 0;
 }
 
@@ -170,12 +158,7 @@ int LuaConfigHandler::_create_sphere(lua_State *L) {
   sphere.specular = _pop_table_field<lua_Number>(L, 1, "spec", luaL_checknumber);
   sphere.reflective = _pop_table_field<lua_Number>(L, 1, "ref", luaL_checknumber);
 
-  lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
-  lua_gettable(L, LUA_REGISTRYINDEX);
-  Scene *scn_ptr = (Scene *)lua_touserdata(L, -1);
-  lua_pop(L, 1);
-
-  scn_ptr->spheres.push_back(sphere);
+  _get_scene(L)->spheres.push_back(sphere);
   return 0;
 }
 
@@ -188,12 +171,7 @@ int LuaConfigHandler::_create_dirlight(lua_State *L) {
   light.intensity = _pop_table_field<lua_Number>(L, 1, "intensity", luaL_checknumber);
   light.direction = _pop_vector3d(L, 1, "direction");
 
-  lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
-  lua_gettable(L, LUA_REGISTRYINDEX);
-  Scene *scn_ptr = (Scene *)lua_touserdata(L, -1);
-  lua_pop(L, 1);
-  scn_ptr->directional_lights.push_back(light);
-
+  _get_scene(L)->directional_lights.push_back(light);
   return 0;
 }
 
@@ -206,10 +184,6 @@ int LuaConfigHandler::_create_pointlight(lua_State *L) {
   light.intensity = _pop_table_field(L, 1, "intensity", luaL_checknumber);
   light.position = _pop_vector3d(L, 1, "position");
 
-  lua_pushstring(L, _RAYTRACER_LUA_SCENE_);
-  lua_gettable(L, LUA_REGISTRYINDEX);
-  Scene *scn_ptr = (Scene *)lua_touserdata(L, -1);
-  lua_pop(L, 1);
-  scn_ptr->point_lights.push_back(light);
+  _get_scene(L)->point_lights.push_back(light);
   return 0;
 }
