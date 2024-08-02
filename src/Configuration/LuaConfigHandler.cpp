@@ -9,8 +9,6 @@
 
 #define _RAYTRACER_LUA_SCENE_ "_RAYTRACER_LUA_SCENE_ADDRESS_"
 
-Scene *LuaConfigHandler::getScene() const { return m_scene; }
-
 LuaConfigHandler::LuaConfigHandler() {}
 
 bool LuaConfigHandler::generate_example_config(std::filesystem::path path) {
@@ -49,13 +47,12 @@ create_pointlight { intensity = 0.2, position = { 1, 4, 4 } })";
   return true;
 }
 
-bool LuaConfigHandler::read_config(const std::string &filepath) {
+bool LuaConfigHandler::read_config(const std::string &filepath, Scene* scene) {
   lua_State *state = luaL_newstate();
   _define_globals(state);
 
-  m_scene = new Scene();
   lua_pushstring(state, _RAYTRACER_LUA_SCENE_);
-  lua_pushlightuserdata(state, m_scene);
+  lua_pushlightuserdata(state, scene);
   lua_settable(state, LUA_REGISTRYINDEX);
 
   if (luaL_dofile(state, filepath.c_str()) != LUA_OK) {

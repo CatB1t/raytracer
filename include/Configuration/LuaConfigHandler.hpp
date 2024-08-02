@@ -12,12 +12,9 @@ class LuaConfigHandler {
 public:
   LuaConfigHandler();
   bool generate_example_config(std::filesystem::path path);
-  bool read_config(const std::string &filepath);
-  Scene *getScene() const;
+  bool read_config(const std::string &filepath, Scene* scene);
 
 private:
-  Scene *m_scene;
-
   static RGBColor _pop_color(lua_State *L, int table_index, const char* field_name);
   static Vector3D _pop_vector3d(lua_State *L, int table_index, const char* field_name);
 

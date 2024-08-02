@@ -32,12 +32,11 @@ int main(int argc, char *argv[]) {
     read_config_path /= parser.getOptStr("-c");
   }
 
-  if(!cfg_handler.read_config(read_config_path.c_str())) {
+  Scene scene;
+  if(!cfg_handler.read_config(read_config_path.c_str(), &scene)) {
     printf("Failed to load scene configuration.\n");
     return EXIT_FAILURE;
   }
-
-  Scene *scene = cfg_handler.getScene();
 
   Canvas &canvas = image.getCanvas();
   int x_range = canvas.get_rangeX();
@@ -49,14 +48,13 @@ int main(int argc, char *argv[]) {
   for (int i = -x_range; i <= x_range; ++i) {
     for (int j = -y_range; j <= y_range; ++j) {
       Vector3D viewport_point = canvas.canvasToViewport({i, j});
-      RGBColor color = Raytracer::traceRay(scene->camera_position, viewport_point, 1, 100, *scene, scene->tracing_depth);
+      RGBColor color = Raytracer::traceRay(scene.camera_position, viewport_point, 1, 100, scene, scene.tracing_depth);
       canvas.put_pixel(i, j, color);
     }
   }
 
   timer.end();
   std::cout << "Runtime: " << timer.getTime().count() << "ms. ";
-  delete scene;
 
   image.write();
   return EXIT_SUCCESS;
