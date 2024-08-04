@@ -14,7 +14,7 @@ struct Sphere {
   float reflective = -1.0f;
 
   Vector2D<float> *intersect_ray(Vec3 origin, Vec3 direction) const {
-    Vector3D co = origin - center;
+    Vec3 co = origin - center;
     float a = direction.dot(direction);
     float b = 2 * direction.dot(co);
     float c = co.dot(co) - radius * radius;
