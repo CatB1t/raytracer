@@ -3,7 +3,6 @@
 #include <filesystem>
 
 #include "Graphics/Canvas.hpp"
-#include <string>
 
 class BmpImage {
 public:
