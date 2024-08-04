@@ -2,7 +2,7 @@
 
 namespace Raytracer {
 
-HitInfo *intersect_objects(Vector3D origin, Vector3D dir, float t_min,
+HitInfo *intersect_objects(Vec3 origin, Vec3 dir, float t_min,
                            float t_max, const Scene &scene) {
   double closeset_sphere_distance = FLT_MAX;
   const Sphere *closeset_sphere = nullptr;
@@ -34,7 +34,7 @@ HitInfo *intersect_objects(Vector3D origin, Vector3D dir, float t_min,
   return new HitInfo{closeset_sphere_distance, closeset_sphere};
 }
 
-RGBColor traceRay(Vector3D origin, Vector3D dir, float t_min, float t_max,
+RGBColor traceRay(Vec3 origin, Vec3 dir, float t_min, float t_max,
                   Scene &scene, int depth) {
   HitInfo *hit = intersect_objects(origin, dir, t_min, t_max, scene);
 
@@ -43,11 +43,11 @@ RGBColor traceRay(Vector3D origin, Vector3D dir, float t_min, float t_max,
 
   float total_intensity = scene.ambient_light.intensity;
 
-  Vector3D intersection_point = origin + dir * hit->distance;
-  Vector3D normal_dir = (intersection_point - hit->sphere->center).normalize();
+  Vec3 intersection_point = origin + dir * hit->distance;
+  Vec3 normal_dir = (intersection_point - hit->sphere->center).normalize();
   const double normal_length = normal_dir.length();
 
-  Vector3D view_dir = -1 * dir;
+  Vec3 view_dir = -1 * dir;
   constexpr double eps = 0.001;
 
   for (auto light : scene.directional_lights) {
@@ -63,7 +63,7 @@ RGBColor traceRay(Vector3D origin, Vector3D dir, float t_min, float t_max,
   }
 
   for (auto light : scene.point_lights) {
-    Vector3D light_direction = light.position - intersection_point;
+    Vec3 light_direction = light.position - intersection_point;
     HitInfo *shadow_hit =
         intersect_objects(intersection_point, light_direction, eps, 1, scene);
     if (shadow_hit) {
@@ -84,21 +84,21 @@ RGBColor traceRay(Vector3D origin, Vector3D dir, float t_min, float t_max,
   if (depth <= 0 | reflective <= 0)
     return sphereColor;
 
-  Vector3D reflectedDir = view_dir.reflect(normal_dir);
+  Vec3 reflectedDir = view_dir.reflect(normal_dir);
   RGBColor reflectColor = traceRay(intersection_point, reflectedDir, 0.05f,
                                    FLT_MAX, scene, depth - 1);
   return (reflectColor * reflective) + (sphereColor * (1.0f - reflective));
 }
 
-double calculateLighting(Vector3D light_dir, float light_intensity,
-                         Vector3D normal_dir, Vector3D view_dir,
+double calculateLighting(Vec3 light_dir, float light_intensity,
+                         Vec3 normal_dir, Vec3 view_dir,
                          float specular_component) {
   double ret = 0.0f;
   double n_dot_l = normal_dir.dot(light_dir);
   if (n_dot_l > 0)
     ret += (n_dot_l / (light_dir.length()));
 
-  Vector3D reflected_light = light_dir.reflect(normal_dir);
+  Vec3 reflected_light = light_dir.reflect(normal_dir);
   double v_dot_r = view_dir.dot(reflected_light);
 
   if (v_dot_r > 0)

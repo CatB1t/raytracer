@@ -47,7 +47,7 @@ int main(int argc, char *argv[]) {
 
   for (int i = -x_range; i <= x_range; ++i) {
     for (int j = -y_range; j <= y_range; ++j) {
-      Vector3D viewport_point = canvas.canvasToViewport({i, j});
+      Vec3 viewport_point = canvas.canvasToViewport({i, j});
       RGBColor color = Raytracer::traceRay(scene.camera_position, viewport_point, 1, 100, scene, scene.tracing_depth);
       canvas.put_pixel(i, j, color);
     }

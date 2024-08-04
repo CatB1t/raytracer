@@ -8,12 +8,12 @@
 struct Sphere {
 
   float radius = 1;
-  Vector3D center;
+  Vec3 center;
   RGBColor color;
   float specular = -1.0f;
   float reflective = -1.0f;
 
-  Vector2D<float> *intersect_ray(Vector3D origin, Vector3D direction) const {
+  Vector2D<float> *intersect_ray(Vec3 origin, Vec3 direction) const {
     Vector3D co = origin - center;
     float a = direction.dot(direction);
     float b = 2 * direction.dot(co);

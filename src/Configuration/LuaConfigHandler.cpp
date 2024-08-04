@@ -99,9 +99,9 @@ RGBColor LuaConfigHandler::_pop_color(lua_State *L, int table_index, const char*
   return color;
 }
 
-Vector3D LuaConfigHandler::_pop_vector3d(lua_State *L, int table_index, const char* field_name) {
+Vec3 LuaConfigHandler::_pop_vector3d(lua_State *L, int table_index, const char* field_name) {
   assert(table_index >= 1 && "negative indexing is not supported for table");
-  Vector3D vec;
+  Vec3 vec;
 
   if (field_name) {
     lua_getfield(L, table_index, field_name);

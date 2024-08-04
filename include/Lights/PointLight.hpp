@@ -5,5 +5,5 @@
 struct PointLight {
 public:
   float intensity = 1;
-  Vector3D position;
+  Vec3 position;
 };

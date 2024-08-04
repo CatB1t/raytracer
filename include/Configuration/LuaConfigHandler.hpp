@@ -17,7 +17,7 @@ public:
 private:
   static Scene* _get_scene(lua_State *L);
   static RGBColor _pop_color(lua_State *L, int table_index, const char* field_name);
-  static Vector3D _pop_vector3d(lua_State *L, int table_index, const char* field_name);
+  static Vec3 _pop_vector3d(lua_State *L, int table_index, const char* field_name);
 
   template<typename T>
   static T _pop_table_field(lua_State *L, int table_index, const char* field_name, T (*fn_ptr) (lua_State *L, int index)) {
